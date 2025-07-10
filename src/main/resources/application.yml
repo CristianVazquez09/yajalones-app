@@ -15,9 +15,11 @@ spring:
   threads:
     virtual:
       enabled: true
-
   profiles:
     default: dev
+
+server:
+  port: 8081
 
 
 
