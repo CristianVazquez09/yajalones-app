@@ -1,9 +1,12 @@
 package com.wolfpack.dto;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -22,5 +25,10 @@ public class ViajeDTO {
     private double totalPagadoSclc;
     private DescuentoDTO descuento;
     private UnidadDTO unidad;
+
+    @JsonManagedReference
+    private List<PasajeroDTO> pasajeros;
+    @JsonManagedReference
+    private List<PaqueteDTO> paquetes;
 
 }
