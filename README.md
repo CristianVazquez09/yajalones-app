@@ -45,6 +45,7 @@ Este proyecto proporciona un back-end en Java con Spring Boot que:
    git clone https://github.com/CristianVazquez09/yajalones-app.git
    cd yajalones-app
    ```
+
 2. Instala dependencias con Maven:
 
    ```bash
@@ -123,6 +124,8 @@ server:
 }
 ```
 
+---
+
 ### Unidades
 
 | Método | Ruta             | Descripción                     |
@@ -152,6 +155,146 @@ server:
 }
 ```
 
+---
+
+### Descuentos
+
+| Método | Ruta          | Descripción              |
+| ------ | ------------- | ------------------------ |
+| POST   | `/descuentos` | Crear un nuevo descuento |
+
+**Crear Descuento** (`POST /descuentos`)
+
+```json
+{
+  "concepto": "Promoción Verano",
+  "descripcion": "Descuento del 10% en viajes seleccionados",
+  "importe": 150.0
+}
+```
+
+---
+
+### Paquetes
+
+| Método | Ruta             | Descripción                     |
+| ------ | ---------------- | ------------------------------- |
+| GET    | `/paquetes`      | Listar todos los paquetes       |
+| GET    | `/paquetes/{id}` | Obtener un paquete por su ID    |
+| PUT    | `/paquetes/{id}` | Actualizar un paquete existente |
+
+**Actualizar Paquete** (`PUT /paquetes/{id}`)
+
+```json
+{
+  "remitente": "Empresa A",
+  "destinatario": "Cliente B",
+  "importe": 250.0,
+  "contenido": "Documentos",
+  "folio": "123e4567-e89b-12d3-a456-426614174000",
+  "posCobrar": false,
+  "estado": true,
+  "viaje": { "idViaje": 1 }
+}
+```
+
+---
+
+### Pasajeros
+
+| Método | Ruta              | Descripción                      |
+| ------ | ----------------- | -------------------------------- |
+| GET    | `/pasajeros`      | Listar todos los pasajeros       |
+| GET    | `/pasajeros/{id}` | Obtener un pasajero por su ID    |
+| PUT    | `/pasajeros/{id}` | Actualizar un pasajero existente |
+
+**Actualizar Pasajero** (`PUT /pasajeros/{id}`)
+
+```json
+{
+  "nombre": "Ana",
+  "apellido": "López",
+  "tipo": "ADULTO",
+  "asiento": 5,
+  "folio": "123e4567-e89b-12d3-a456-426614174001",
+  "importe": 120.0,
+  "tipoPago": "CONTADO",
+  "viaje": { "idViaje": 1 }
+}
+```
+
+---
+
+### Viajes
+
+| Método | Ruta                | Descripción                                   |
+| ------ | ------------------- | --------------------------------------------- |
+| GET    | `/viajes`           | Listar todos los viajes                       |
+| GET    | `/viajes/{idViaje}` | Obtener un viaje por su ID                    |
+| POST   | `/viajes`           | Crear un nuevo viaje con pasajeros y paquetes |
+
+**Crear Viaje** (`POST /viajes`)
+
+```json
+{
+  "origen": "Tuxtla Gutiérrez",
+  "destino": "Yajalón",
+  "descuento": { "idDescuento": 1 },
+  "unidad": { "idUnidad": 2 },
+  "pasajeros": [
+    {
+      "nombre": "Ana",
+      "apellido": "López",
+      "tipo": "ADULTO",
+      "asiento": 5,
+      "folio": "123e4567-e89b-12d3-a456-426614174001",
+      "importe": 120.0,
+      "tipoPago": "CONTADO"
+    }
+  ],
+  "paquetes": [
+    {
+      "remitente": "Empresa A",
+      "destinatario": "Cliente B",
+      "importe": 250.0,
+      "contenido": "Documentos",
+      "folio": "123e4567-e89b-12d3-a456-426614174000",
+      "posCobrar": false,
+      "estado": true
+    }
+  ]
+}
+```
+
+**Obtener Viaje** (`GET /viajes/{idViaje}`) – Ejemplo de respuesta:
+
+```json
+{
+  "idViaje": 1,
+  "origen": "Tuxtla Gutiérrez",
+  "destino": "Yajalón",
+  "totalPasajeros": 120.0,
+  "totalPaqueteria": 250.0,
+  "comision": 34.0,
+  "totalPorCobrar": 336.0,
+  "totalPagadoYajalon": 336.0,
+  "totalPagadoSclc": 0.0,
+  "descuento": {
+    "idDescuento": 1,
+    "concepto": "Promoción Verano",
+    "descripcion": "Descuento del 10% en viajes seleccionados",
+    "importe": 150.0
+  },
+  "unidad": {
+    "idUnidad": 2,
+    "nombre": "Unidad C",
+    "descripcion": "Ruta de prueba",
+    "activo": true
+  },
+  "totalViaje": 370.0
+}
+```
+
 ## Contribuciones
 
 1. Crea una rama con tu feature o fix:
@@ -174,3 +317,5 @@ server:
 ## Licencia
 
 Este proyecto está bajo la [MIT License](LICENSE)
+
+hermano
