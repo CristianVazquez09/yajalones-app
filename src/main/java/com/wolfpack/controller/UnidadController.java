@@ -25,14 +25,14 @@ public class UnidadController {
     private final ModelMapper modelMapper;
 
     @GetMapping
-    public ResponseEntity<List<UnidadDTO>> findAll() throws Exception{
+    public ResponseEntity<List<UnidadDTO>> buscarTodos() throws Exception{
         List<UnidadDTO> list = service.findAll().stream().map(this::convertToDto).toList();
 
         return ResponseEntity.ok(list);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<UnidadDTO> findById(@PathVariable("id") Integer id) throws Exception {
+    public ResponseEntity<UnidadDTO> buscarPorId(@PathVariable("id") Integer id) throws Exception {
         Unidad obj = service.findById(id);
 
         return ResponseEntity.ok(convertToDto(obj));
@@ -41,7 +41,7 @@ public class UnidadController {
 
 
     @PostMapping
-    public ResponseEntity<Void> save(@Valid @RequestBody UnidadDTO dto) throws Exception{
+    public ResponseEntity<Void> guardar(@Valid @RequestBody UnidadDTO dto) throws Exception{
         Unidad obj = service.save(convertToEntity(dto));
 
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(obj.getIdUnidad()).toUri();
@@ -50,7 +50,7 @@ public class UnidadController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<UnidadDTO> update(@Valid @PathVariable("id") Integer id, @RequestBody UnidadDTO dto) throws Exception{
+    public ResponseEntity<UnidadDTO> actualizar(@Valid @PathVariable("id") Integer id, @RequestBody UnidadDTO dto) throws Exception{
         dto.setIdUnidad(id);
         Unidad obj = service.update(id, convertToEntity(dto));
 

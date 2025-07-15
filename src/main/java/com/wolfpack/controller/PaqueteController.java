@@ -24,30 +24,21 @@ public class PaqueteController {
     private final ModelMapper modelMapper;
 
     @GetMapping
-    public ResponseEntity<List<PaqueteDTO>> findAll() throws Exception{
+    public ResponseEntity<List<PaqueteDTO>> buscarTodos() throws Exception{
         List<PaqueteDTO> list = service.findAll().stream().map(this::convertToDto).toList();
 
         return ResponseEntity.ok(list);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<PaqueteDTO> findById(@PathVariable("id") Integer id) throws Exception {
+    public ResponseEntity<PaqueteDTO> buscarPorId(@PathVariable("id") Integer id) throws Exception {
         Paquete obj = service.findById(id);
 
         return ResponseEntity.ok(convertToDto(obj));
     }
 
-    @PostMapping
-    public ResponseEntity<Void> save(@Valid @RequestBody PaqueteDTO dto) throws Exception{
-        Paquete obj = service.save(convertToEntity(dto));
-
-        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(obj.getIdPaquete()).toUri();
-
-        return ResponseEntity.created(location).build();
-    }
-
     @PutMapping("/{id}")
-    public ResponseEntity<PaqueteDTO> update(@Valid @PathVariable("id") Integer id, @RequestBody PaqueteDTO dto) throws Exception{
+    public ResponseEntity<PaqueteDTO> actualizar(@Valid @PathVariable("id") Integer id, @RequestBody PaqueteDTO dto) throws Exception{
         dto.setIdPaquete(id);
         Paquete obj = service.update(id, convertToEntity(dto));
 

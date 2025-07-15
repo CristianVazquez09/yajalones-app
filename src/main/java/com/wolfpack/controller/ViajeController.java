@@ -1,6 +1,7 @@
 package com.wolfpack.controller;
 
-import com.wolfpack.dto.ViajeDTO;
+import com.wolfpack.dto.ViajeRequestDTO;
+import com.wolfpack.dto.ViajeResponseDTO;
 import com.wolfpack.model.Viaje;
 import com.wolfpack.service.IViajeService;
 import jakarta.validation.Valid;
@@ -23,34 +24,41 @@ public class ViajeController {
     private final ModelMapper modelMapper;
 
     @GetMapping
-    public ResponseEntity<List<ViajeDTO>> findAll() throws Exception{
-        List<ViajeDTO> list = service.findAll().stream().map(this::convertToDto).toList();
+    public ResponseEntity<List<ViajeResponseDTO>> buscarTodos() throws Exception{
+        List<ViajeResponseDTO> list = service.findAll().stream().map(this::convertToDtoResponse).toList();
 
         return ResponseEntity.ok(list);
     }
 
-    @PostMapping
-    public ResponseEntity<Void> save(@Valid @RequestBody ViajeDTO dto) throws Exception{
-        Viaje obj = service.save(convertToEntity(dto));
+    @GetMapping("/{idViaje}")
+    public ResponseEntity<ViajeResponseDTO> buscarPorId(@PathVariable Integer idViaje) throws Exception{
+        ViajeResponseDTO dto =convertToDtoResponse( service.findById(idViaje));
 
+        return ResponseEntity.ok(dto);
+    }
+
+    @PostMapping
+    public ResponseEntity<Void> guardarViaje (@Valid @RequestBody ViajeRequestDTO dto) throws Exception{
+        Viaje obj = service.guardarViaje(convertToEntityRequest(dto));
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(obj.getIdViaje()).toUri();
 
         return ResponseEntity.created(location).build();
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<ViajeDTO> update(@Valid @PathVariable("id") Integer id, @RequestBody ViajeDTO dto) throws Exception{
-        dto.setIdViaje(id);
-        Viaje obj = service.update(id, convertToEntity(dto));
 
-        return ResponseEntity.ok(convertToDto(obj));
+    private ViajeRequestDTO convertToDtoRequest(Viaje obj){
+        return modelMapper.map(obj, ViajeRequestDTO.class);
     }
 
-    private ViajeDTO convertToDto(Viaje obj){
-        return modelMapper.map(obj, ViajeDTO.class);
+    private Viaje convertToEntityRequest(ViajeRequestDTO dto){
+        return modelMapper.map(dto, Viaje.class);
     }
 
-    private Viaje convertToEntity(ViajeDTO dto){
+    private ViajeResponseDTO convertToDtoResponse(Viaje obj){
+        return modelMapper.map(obj, ViajeResponseDTO.class);
+    }
+
+    private Viaje convertToEntityResponse(ViajeResponseDTO dto){
         return modelMapper.map(dto, Viaje.class);
     }
 

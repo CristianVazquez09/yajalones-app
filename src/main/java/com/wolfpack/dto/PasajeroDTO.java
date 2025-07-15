@@ -28,6 +28,6 @@ public class PasajeroDTO {
     private TipoPago tipoPago;
 
     @JsonBackReference
-    private ViajeDTO viaje;
+    private ViajeRequestDTO viaje;
 
 }

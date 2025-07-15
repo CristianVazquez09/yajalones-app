@@ -52,10 +52,13 @@ public class Viaje {
     @JoinColumn(name = "id_unidad",unique = true, nullable = false)
     private Unidad unidad;
 
-    @OneToMany(mappedBy = "viaje", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @Column(nullable = false, columnDefinition = "decimal(8,2)")
+    private double totalViaje;
+
+    @OneToMany(mappedBy = "viaje", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Pasajero> pasajeros;
 
-    @OneToMany(mappedBy = "viaje", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "viaje", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Paquete> paquetes;
 
 

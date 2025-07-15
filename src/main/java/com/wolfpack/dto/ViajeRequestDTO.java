@@ -12,20 +12,21 @@ import java.util.List;
 @AllArgsConstructor
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-public class ViajeDTO {
+public class ViajeRequestDTO {
 
     private Integer idViaje;
     private String origen;
     private String destino;
-    private double totalPasajeros;
-    private double totalPaqueteria;
-    private double comision;
-    private double totalPorCobrar;
-    private double totalPagadoYajalon;
-    private double totalPagadoSclc;
+    //private double totalPasajeros;
+    //private double totalPaqueteria;
+    //private double comision;
+    //private double totalPorCobrar;
+    //private double totalPagadoYajalon;
+    //private double totalPagadoSclc;
     private DescuentoDTO descuento;
     private UnidadDTO unidad;
 
+    //private double totalViaje;
     @JsonManagedReference
     private List<PasajeroDTO> pasajeros;
     @JsonManagedReference

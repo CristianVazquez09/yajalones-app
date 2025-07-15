@@ -24,32 +24,21 @@ public class PasajeroController {
     private final ModelMapper modelMapper;
 
     @GetMapping
-    public ResponseEntity<List<PasajeroDTO>> findAll() throws Exception{
+    public ResponseEntity<List<PasajeroDTO>> buscarTodos() throws Exception{
         List<PasajeroDTO> list = service.findAll().stream().map(this::convertToDto).toList();
 
         return ResponseEntity.ok(list);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<PasajeroDTO> findById(@PathVariable("id") Integer id) throws Exception {
+    public ResponseEntity<PasajeroDTO> buscarPorId(@PathVariable("id") Integer id) throws Exception {
         Pasajero obj = service.findById(id);
 
         return ResponseEntity.ok(convertToDto(obj));
     }
 
-
-
-    @PostMapping
-    public ResponseEntity<Void> save(@Valid @RequestBody PasajeroDTO dto) throws Exception{
-        Pasajero obj = service.save(convertToEntity(dto));
-
-        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(obj.getIdPasajero()).toUri();
-
-        return ResponseEntity.created(location).build();
-    }
-
     @PutMapping("/{id}")
-    public ResponseEntity<PasajeroDTO> update(@Valid @PathVariable("id") Integer id, @RequestBody PasajeroDTO dto) throws Exception{
+    public ResponseEntity<PasajeroDTO> actualizar(@Valid @PathVariable("id") Integer id, @RequestBody PasajeroDTO dto) throws Exception{
         dto.setIdPasajero(id);
         Pasajero obj = service.update(id, convertToEntity(dto));
 

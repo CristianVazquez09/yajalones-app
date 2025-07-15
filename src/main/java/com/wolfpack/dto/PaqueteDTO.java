@@ -2,8 +2,6 @@ package com.wolfpack.dto;
 
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.wolfpack.model.Viaje;
-import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -26,5 +24,5 @@ public class PaqueteDTO {
     private boolean posCobrar;
     private boolean estado;
     @JsonBackReference
-    private ViajeDTO viaje;
+    private ViajeRequestDTO viaje;
 }
