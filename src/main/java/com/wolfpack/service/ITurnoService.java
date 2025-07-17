@@ -1,6 +1,7 @@
 package com.wolfpack.service;
 
 import com.wolfpack.model.Chofer;
+import com.wolfpack.model.Turno;
 
-public interface IChoferService extends ICRUD<Chofer, Integer> {
+public interface ITurnoService extends ICRUD<Turno, Integer> {
 }

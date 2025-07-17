@@ -4,9 +4,9 @@ import java.util.List;
 
 public interface ICRUD<T, ID> {
 
-    T save(T t) throws Exception;
-    T update(ID id, T t) throws Exception;
-    List<T> findAll() throws Exception;
-    T findById(ID id) throws Exception;
-    void delete(ID id) throws Exception;
+    T guardar(T t) throws Exception;
+    T actualizar(ID id, T t) throws Exception;
+    List<T> buscarTodos() throws Exception;
+    T buscarPorId(ID id) throws Exception;
+    void eliminar(ID id) throws Exception;
 }

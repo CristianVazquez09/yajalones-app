@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -33,25 +34,10 @@ public class ViajeServiceImpl extends CRUDImpl<Viaje, Integer> implements IViaje
     @Override
     public Viaje guardarViaje(Viaje viaje) {
 
-        List<Pasajero> pasajeros = Optional.ofNullable(viaje.getPasajeros())
-                .orElseGet(Collections::emptyList);
-        List<Paquete> paquetes = Optional.ofNullable(viaje.getPaquetes())
-                .orElseGet(Collections::emptyList);
-
-        double totalPasajeros = sumarImportes(pasajeros);
-
-        double totalPaquetes = sumarImportes(paquetes);
-
-        double totalPagoSCLC = sumarPorTipoPago(pasajeros, TipoPago.PAGAR_SCLC);
-        double totalPagoYajalon = sumarPorTipoPago(pasajeros, TipoPago.PAGAR_YAJALON);
-        double totalPorCobrar = sumarPaquetesPorCobrar(paquetes);
-
-        viaje.setTotalPasajeros(totalPasajeros);
-        viaje.setTotalPaqueteria(totalPaquetes);
-        viaje.setTotalPagadoSclc(totalPagoSCLC);
-        viaje.setTotalPagadoYajalon(totalPagoYajalon);
-        viaje.setTotalPorCobrar(totalPorCobrar);
         viaje.setComision(COMISION);
+        double totalPasajeros = viaje.getTotalPasajeros();
+
+        double totalPaquetes = viaje.getTotalPaqueteria();
 
         double ingresoTotal = totalPasajeros + totalPaquetes;
         if (ingresoTotal <= COMISION) {
@@ -65,6 +51,55 @@ public class ViajeServiceImpl extends CRUDImpl<Viaje, Integer> implements IViaje
         viaje.setTotalViaje(ingresoTotal);
 
         return repo.save(viaje);
+    }
+
+    @Override
+    public void agregarPasajero(Pasajero pasajero) {
+
+        Viaje viaje = repo.getReferenceById(pasajero.getViaje().getIdViaje());
+
+
+        List<Pasajero> pasajeros= viaje.getPasajeros();
+        if(viaje.getPasajeros() == null){
+            pasajeros = new ArrayList<>();
+        }
+
+
+        pasajeros.add(pasajero);
+
+        double totalPasajeros = sumarImportes(pasajeros);
+        double totalPagoSCLC = sumarPorTipoPago(pasajeros, TipoPago.PAGAR_SCLC);
+        double totalPagoYajalon = sumarPorTipoPago(pasajeros, TipoPago.PAGAR_YAJALON);
+
+        viaje.setTotalPasajeros(totalPasajeros);
+        viaje.setTotalPagadoSclc(totalPagoSCLC);
+        viaje.setTotalPagadoYajalon(totalPagoYajalon);
+        viaje.setPasajeros(pasajeros);
+
+        guardarViaje(viaje);
+
+    }
+
+    @Override
+    public void agregarPaquetes(Paquete paquete) {
+        Viaje viaje = repo.getReferenceById(paquete.getViaje().getIdViaje());
+
+
+        List<Paquete> paquetes= viaje.getPaquetes();
+        if(viaje.getPaquetes() == null){
+            paquetes = new ArrayList<>();
+        }
+
+        paquetes.add(paquete);
+
+        double totalPaquetes = sumarImportes(paquetes);
+        double totalPorCobrar = sumarPaquetesPorCobrar(paquetes);
+
+        viaje.setTotalPaqueteria(totalPaquetes);
+        viaje.setTotalPorCobrar(totalPorCobrar);
+        viaje.setPaquetes(paquetes);
+
+        guardarViaje(viaje);
     }
 
 
@@ -93,7 +128,7 @@ public class ViajeServiceImpl extends CRUDImpl<Viaje, Integer> implements IViaje
 
     private double sumarPaquetesPorCobrar(List<Paquete> paquetes){
         return paquetes.stream()
-                .filter(Paquete::isPosCobrar)
+                .filter(Paquete::isPorCobrar)
                 .mapToDouble(Paquete::getImporte)
                 .sum();
     }

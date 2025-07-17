@@ -1,9 +1,8 @@
 package com.wolfpack.repo;
 
 
-import com.wolfpack.model.Chofer;
-import org.springframework.stereotype.Repository;
+import com.wolfpack.model.Turno;
 
-public interface IChoferRepo extends IGenericRepo<Chofer, Integer> {
+public interface ITurnoRepo extends IGenericRepo<Turno, Integer> {
 
 }
