@@ -1,6 +1,5 @@
 package com.wolfpack.dto;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.wolfpack.model.enums.TipoPago;
 import com.wolfpack.model.enums.TipoPasajero;
 import lombok.AllArgsConstructor;
@@ -27,7 +26,6 @@ public class PasajeroDTO {
     private double importe;
     private TipoPago tipoPago;
 
-    @JsonBackReference
-    private ViajeRequestDTO viaje;
+    private ViajeDTO viaje;
 
 }

@@ -27,4 +27,18 @@ public class ViajeResponseDTO {
     private UnidadDTO unidad;
     private double totalViaje;
 
+    //private double totalPasajeros;
+    //private double totalPaqueteria;
+    //private double comision;
+    //private double totalPorCobrar;
+    //private double totalPagadoYajalon;
+    //private double totalPagadoSclc;
+    //private DescuentoDTO descuento;
+
+    //private double totalViaje;
+    /*@JsonManagedReference
+    private List<PasajeroDTO> pasajeros;
+    @JsonManagedReference
+    private List<PaqueteDTO> paquetes;*/
+
 }

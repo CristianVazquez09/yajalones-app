@@ -1,7 +1,6 @@
 package com.wolfpack.dto;
 
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -23,6 +22,5 @@ public class PaqueteDTO {
     private UUID folio;
     private boolean posCobrar;
     private boolean estado;
-    @JsonBackReference
-    private ViajeRequestDTO viaje;
+    private ViajeDTO viaje;
 }

@@ -5,21 +5,21 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
-@AllArgsConstructor
+import java.util.Locale;
+
 @NoArgsConstructor
+@AllArgsConstructor
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-public class UnidadDTO {
+public class ViajeDTO {
+
+    private Integer idViaje;
+    private String origen;
+    private String destino;
+    private Locale fechaSalida;
+
+    private UnidadDTO unidad;
 
 
-    @EqualsAndHashCode.Include
-    private Integer idUnidad;
 
-    private String nombre;
-
-    private String descripcion;
-
-    private boolean activo;
-
-    private TurnoDTO turno;
 }
