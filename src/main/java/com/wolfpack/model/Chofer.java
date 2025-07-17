@@ -28,6 +28,6 @@ public class Chofer {
     private boolean activo;
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, optional = false)
-    @JoinColumn(name = "id_unidad",unique = true, nullable = false)
+    @JoinColumn(name = "id_unidad",unique = true)
     private Unidad unidad;
 }

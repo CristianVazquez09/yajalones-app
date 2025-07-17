@@ -6,28 +6,23 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
+import java.sql.Time;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Entity
-public class Unidad {
+public class Turno {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @EqualsAndHashCode.Include
-    private Integer idUnidad;
+    private Integer idTurno;
 
-    @Column(nullable = false, length = 10)
-    private String nombre;
-
-    @Column(length = 200)
-    private String descripcion;
+    @Column(nullable = false)
+    private Time horario;
 
     @Column(nullable = false)
     private boolean activo;
-
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, optional = false, orphanRemoval = true)
-    @JoinColumn(name = "id_turno", unique = true, nullable = false)
-    private Turno turno;
 }

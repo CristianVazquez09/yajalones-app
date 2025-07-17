@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @NoArgsConstructor
@@ -26,6 +27,9 @@ public class Viaje {
     @Column(nullable = false, length = 30)
     private String destino;
 
+    @Column(nullable = false)
+    private LocalDate fechaSalida;
+
     @Column(nullable = false, columnDefinition = "decimal(6,2)")
     private double totalPasajeros;
 
@@ -45,7 +49,7 @@ public class Viaje {
     private double totalPagadoSclc;
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, optional = false)
-    @JoinColumn(name = "id_descuento",unique = true, nullable = false)
+    @JoinColumn(name = "id_descuento",unique = true)
     private Descuento descuento;
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, optional = false)
@@ -54,12 +58,5 @@ public class Viaje {
 
     @Column(nullable = false, columnDefinition = "decimal(8,2)")
     private double totalViaje;
-
-    @OneToMany(mappedBy = "viaje", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    private List<Pasajero> pasajeros;
-
-    @OneToMany(mappedBy = "viaje", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    private List<Paquete> paquetes;
-
 
 }
