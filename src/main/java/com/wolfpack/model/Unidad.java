@@ -27,7 +27,7 @@ public class Unidad {
     @Column(nullable = false)
     private boolean activo;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, optional = false, orphanRemoval = true)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, optional = false, orphanRemoval = true)
     @JoinColumn(name = "id_turno", unique = true, nullable = false)
     private Turno turno;
 }

@@ -37,7 +37,7 @@ public class Paquete {
     private UUID folio;
 
     @Column(nullable = false)
-    private boolean posCobrar;
+    private boolean porCobrar;
 
     @Column(nullable = false)
     private boolean estado;

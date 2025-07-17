@@ -20,7 +20,7 @@ public class PaqueteDTO {
     private double importe;
     private String contenido;
     private UUID folio;
-    private boolean posCobrar;
+    private boolean porCobrar;
     private boolean estado;
     private ViajeDTO viaje;
 }

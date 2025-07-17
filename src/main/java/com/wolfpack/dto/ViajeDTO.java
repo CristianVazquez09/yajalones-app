@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.Locale;
 
 @NoArgsConstructor
@@ -16,7 +17,7 @@ public class ViajeDTO {
     private Integer idViaje;
     private String origen;
     private String destino;
-    private Locale fechaSalida;
+    private LocalDateTime fechaSalida;
 
     private UnidadDTO unidad;
 
