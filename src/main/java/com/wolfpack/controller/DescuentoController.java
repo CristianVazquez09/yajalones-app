@@ -23,7 +23,7 @@ public class DescuentoController {
 
     @PostMapping
     public ResponseEntity<Void> guardarDescuento(@Valid @RequestBody DescuentoDTO dto) throws Exception{
-        Descuento obj = service.save(convertToEntity(dto));
+        Descuento obj = service.guardar(convertToEntity(dto));
 
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(obj.getIdDescuento()).toUri();
 

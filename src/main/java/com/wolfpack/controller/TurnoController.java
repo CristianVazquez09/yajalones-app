@@ -1,8 +1,8 @@
 package com.wolfpack.controller;
 
-import com.wolfpack.dto.ChoferDTO;
-import com.wolfpack.model.Chofer;
-import com.wolfpack.service.IChoferService;
+import com.wolfpack.dto.TurnoDTO;
+import com.wolfpack.model.Turno;
+import com.wolfpack.service.ITurnoService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -15,24 +15,24 @@ import java.util.List;
 
 
 @RestController
-@RequestMapping("/choferes")
+@RequestMapping("/turnos")
 @RequiredArgsConstructor
-public class ChoferController {
+public class TurnoController {
 
     //@Autowired
-    private final IChoferService service;
+    private final ITurnoService service;
     private final ModelMapper modelMapper;
 
     @GetMapping
-    public ResponseEntity<List<ChoferDTO>> buscarTodos() throws Exception{
-        List<ChoferDTO> list = service.findAll().stream().map(this::convertToDto).toList();
+    public ResponseEntity<List<TurnoDTO>> buscarTodos() throws Exception{
+        List<TurnoDTO> list = service.buscarTodos().stream().map(this::convertToDto).toList();
 
         return ResponseEntity.ok(list);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ChoferDTO> buscarPorId(@PathVariable("id") Integer id) throws Exception {
-        Chofer obj = service.findById(id);
+    public ResponseEntity<TurnoDTO> buscarPorId(@PathVariable("id") Integer id) throws Exception {
+        Turno obj = service.buscarPorId(id);
 
         return ResponseEntity.ok(convertToDto(obj));
     }
@@ -40,28 +40,28 @@ public class ChoferController {
 
 
     @PostMapping
-    public ResponseEntity<Void> guardar(@Valid @RequestBody ChoferDTO dto) throws Exception{
-        Chofer obj = service.save(convertToEntity(dto));
+    public ResponseEntity<Void> guardar(@Valid @RequestBody TurnoDTO dto) throws Exception{
+        Turno obj = service.guardar(convertToEntity(dto));
 
-        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(obj.getIdChofer()).toUri();
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(obj.getIdTurno()).toUri();
 
         return ResponseEntity.created(location).build();
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ChoferDTO> actualizar(@Valid @PathVariable("id") Integer id, @RequestBody ChoferDTO dto) throws Exception{
-        dto.setIdChofer(id);
-        Chofer obj = service.update(id, convertToEntity(dto));
+    public ResponseEntity<TurnoDTO> actualizar(@Valid @PathVariable("id") Integer id, @RequestBody TurnoDTO dto) throws Exception{
+        dto.setIdTurno(id);
+        Turno obj = service.actualizar(id, convertToEntity(dto));
 
         return ResponseEntity.ok(convertToDto(obj));
     }
 
-    private ChoferDTO convertToDto(Chofer obj){
-        return modelMapper.map(obj, ChoferDTO.class);
+    private TurnoDTO convertToDto(Turno obj){
+        return modelMapper.map(obj, TurnoDTO.class);
     }
 
-    private Chofer convertToEntity(ChoferDTO dto){
-        return modelMapper.map(dto, Chofer.class);
+    private Turno convertToEntity(TurnoDTO dto){
+        return modelMapper.map(dto, Turno.class);
     }
 
 

@@ -6,7 +6,6 @@ import com.wolfpack.service.IUnidadService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -26,14 +25,14 @@ public class UnidadController {
 
     @GetMapping
     public ResponseEntity<List<UnidadDTO>> buscarTodos() throws Exception{
-        List<UnidadDTO> list = service.findAll().stream().map(this::convertToDto).toList();
+        List<UnidadDTO> list = service.buscarTodos().stream().map(this::convertToDto).toList();
 
         return ResponseEntity.ok(list);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<UnidadDTO> buscarPorId(@PathVariable("id") Integer id) throws Exception {
-        Unidad obj = service.findById(id);
+        Unidad obj = service.buscarPorId(id);
 
         return ResponseEntity.ok(convertToDto(obj));
     }
@@ -42,7 +41,7 @@ public class UnidadController {
 
     @PostMapping
     public ResponseEntity<Void> guardar(@Valid @RequestBody UnidadDTO dto) throws Exception{
-        Unidad obj = service.save(convertToEntity(dto));
+        Unidad obj = service.guardar(convertToEntity(dto));
 
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(obj.getIdUnidad()).toUri();
 
@@ -52,7 +51,7 @@ public class UnidadController {
     @PutMapping("/{id}")
     public ResponseEntity<UnidadDTO> actualizar(@Valid @PathVariable("id") Integer id, @RequestBody UnidadDTO dto) throws Exception{
         dto.setIdUnidad(id);
-        Unidad obj = service.update(id, convertToEntity(dto));
+        Unidad obj = service.actualizar(id, convertToEntity(dto));
 
         return ResponseEntity.ok(convertToDto(obj));
     }

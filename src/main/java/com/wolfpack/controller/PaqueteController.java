@@ -1,6 +1,8 @@
 package com.wolfpack.controller;
 
 import com.wolfpack.dto.PaqueteDTO;
+import com.wolfpack.dto.PaqueteDTO;
+import com.wolfpack.model.Paquete;
 import com.wolfpack.model.Paquete;
 import com.wolfpack.service.IPaqueteService;
 import jakarta.validation.Valid;
@@ -25,14 +27,14 @@ public class PaqueteController {
 
     @GetMapping
     public ResponseEntity<List<PaqueteDTO>> buscarTodos() throws Exception{
-        List<PaqueteDTO> list = service.findAll().stream().map(this::convertToDto).toList();
+        List<PaqueteDTO> list = service.buscarTodos().stream().map(this::convertToDto).toList();
 
         return ResponseEntity.ok(list);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<PaqueteDTO> buscarPorId(@PathVariable("id") Integer id) throws Exception {
-        Paquete obj = service.findById(id);
+        Paquete obj = service.buscarPorId(id);
 
         return ResponseEntity.ok(convertToDto(obj));
     }
@@ -40,9 +42,18 @@ public class PaqueteController {
     @PutMapping("/{id}")
     public ResponseEntity<PaqueteDTO> actualizar(@Valid @PathVariable("id") Integer id, @RequestBody PaqueteDTO dto) throws Exception{
         dto.setIdPaquete(id);
-        Paquete obj = service.update(id, convertToEntity(dto));
+        Paquete obj = service.actualizar(id, convertToEntity(dto));
 
         return ResponseEntity.ok(convertToDto(obj));
+    }
+
+    @PostMapping
+    public ResponseEntity<Void> guardar(@Valid @RequestBody PaqueteDTO dto) throws Exception{
+        Paquete obj = service.guardarPaquete(convertToEntity(dto));
+
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(obj.getIdPaquete()).toUri();
+
+        return ResponseEntity.created(location).build();
     }
 
     private PaqueteDTO convertToDto(Paquete obj){

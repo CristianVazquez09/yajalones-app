@@ -1,6 +1,8 @@
 package com.wolfpack.controller;
 
+import com.wolfpack.dto.ChoferDTO;
 import com.wolfpack.dto.PasajeroDTO;
+import com.wolfpack.model.Chofer;
 import com.wolfpack.model.Pasajero;
 import com.wolfpack.service.IPasajeroService;
 import jakarta.validation.Valid;
@@ -19,28 +21,36 @@ import java.util.List;
 @RequiredArgsConstructor
 public class PasajeroController {
 
-    //@Autowired
     private final IPasajeroService service;
     private final ModelMapper modelMapper;
 
     @GetMapping
     public ResponseEntity<List<PasajeroDTO>> buscarTodos() throws Exception{
-        List<PasajeroDTO> list = service.findAll().stream().map(this::convertToDto).toList();
+        List<PasajeroDTO> list = service.buscarTodos().stream().map(this::convertToDto).toList();
 
         return ResponseEntity.ok(list);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<PasajeroDTO> buscarPorId(@PathVariable("id") Integer id) throws Exception {
-        Pasajero obj = service.findById(id);
+        Pasajero obj = service.buscarPorId(id);
 
         return ResponseEntity.ok(convertToDto(obj));
+    }
+
+    @PostMapping
+    public ResponseEntity<Void> guardar(@Valid @RequestBody PasajeroDTO dto) throws Exception{
+        Pasajero obj = service.guardarPasajero(convertToEntity(dto));
+
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(obj.getIdPasajero()).toUri();
+
+        return ResponseEntity.created(location).build();
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<PasajeroDTO> actualizar(@Valid @PathVariable("id") Integer id, @RequestBody PasajeroDTO dto) throws Exception{
         dto.setIdPasajero(id);
-        Pasajero obj = service.update(id, convertToEntity(dto));
+        Pasajero obj = service.actualizar(id, convertToEntity(dto));
 
         return ResponseEntity.ok(convertToDto(obj));
     }

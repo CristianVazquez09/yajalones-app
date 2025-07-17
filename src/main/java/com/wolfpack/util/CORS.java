@@ -1,4 +1,4 @@
-package com.mitocode.util;
+package com.wolfpack.util;
 
 import java.io.IOException;
 
@@ -10,7 +10,6 @@ import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;

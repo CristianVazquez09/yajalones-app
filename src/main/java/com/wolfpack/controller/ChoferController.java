@@ -25,14 +25,14 @@ public class ChoferController {
 
     @GetMapping
     public ResponseEntity<List<ChoferDTO>> buscarTodos() throws Exception{
-        List<ChoferDTO> list = service.findAll().stream().map(this::convertToDto).toList();
+        List<ChoferDTO> list = service.buscarTodos().stream().map(this::convertToDto).toList();
 
         return ResponseEntity.ok(list);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<ChoferDTO> buscarPorId(@PathVariable("id") Integer id) throws Exception {
-        Chofer obj = service.findById(id);
+        Chofer obj = service.buscarPorId(id);
 
         return ResponseEntity.ok(convertToDto(obj));
     }
@@ -41,7 +41,7 @@ public class ChoferController {
 
     @PostMapping
     public ResponseEntity<Void> guardar(@Valid @RequestBody ChoferDTO dto) throws Exception{
-        Chofer obj = service.save(convertToEntity(dto));
+        Chofer obj = service.guardar(convertToEntity(dto));
 
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(obj.getIdChofer()).toUri();
 
@@ -51,7 +51,7 @@ public class ChoferController {
     @PutMapping("/{id}")
     public ResponseEntity<ChoferDTO> actualizar(@Valid @PathVariable("id") Integer id, @RequestBody ChoferDTO dto) throws Exception{
         dto.setIdChofer(id);
-        Chofer obj = service.update(id, convertToEntity(dto));
+        Chofer obj = service.actualizar(id, convertToEntity(dto));
 
         return ResponseEntity.ok(convertToDto(obj));
     }
