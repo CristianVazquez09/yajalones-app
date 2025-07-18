@@ -5,21 +5,15 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @Data
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
-public class UnidadDTO {
-
+@EqualsAndHashCode (onlyExplicitlyIncluded = true)
+public class DescuentoDTO {
 
     @EqualsAndHashCode.Include
-    private Integer idUnidad;
-
-    private String nombre;
-
+    private Integer idDescuento;
+    private String concepto;
     private String descripcion;
-
-    private boolean activo;
-
-    private TurnoDTO turno;
+    private double importe;
 }

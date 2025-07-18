@@ -5,21 +5,15 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
+import java.sql.Time;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-public class UnidadDTO {
+public class TurnoDTO {
 
-
-    @EqualsAndHashCode.Include
-    private Integer idUnidad;
-
-    private String nombre;
-
-    private String descripcion;
-
+    private Integer idTurno;
+    private Time horario;
     private boolean activo;
-
-    private TurnoDTO turno;
 }
