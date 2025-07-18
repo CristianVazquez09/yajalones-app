@@ -59,13 +59,13 @@ Ubicación: `src/main/resources/application-dev.yml`
 
 ```yaml
 spring:
-  datasource:
-    url: [URL_BD]
-    username: [USUARIO_BD]
-    password: [CONTRASEÑA_BD]
+   datasource:
+      url: [URL_BD]
+      username: [USUARIO_BD]
+      password: [CONTRASEÑA_BD]
 
 server:
-  port: 8081
+   port: 8081
 ```
 
 > **Nota**:
@@ -86,46 +86,24 @@ server:
 ```
 
 ## Endpoints Principales
+### Turnos
 
-### Choferes
+| Método | Ruta           | Descripción                   |
+| ------ | -------------- | ----------------------------- |
+| GET    | `/turnos`      | Listar todos los turnos       |
+| GET    | `/turnos/{id}` | Obtener un turno por su ID    |
+| POST   | `/turnos`      | Crear un nuevo turno          |
+| PUT    | `/turnos/{id}` | Actualizar un turno existente |
 
-| Método | Ruta             | Descripción                    |
-| ------ | ---------------- | ------------------------------ |
-| GET    | `/choferes`      | Listar todos los choferes      |
-| GET    | `/choferes/{id}` | Obtener un chofer por su ID    |
-| POST   | `/choferes`      | Crear un nuevo chofer          |
-| PUT    | `/choferes/{id}` | Actualizar un chofer existente |
-
-**Crear Chofer** (`POST /choferes`)
-
-```json
-{
-  "nombre": "Juan",
-  "apellido": "Pérez",
-  "telefono": "1234567890",
-  "activo": true,
-  "unidad": {
-    "idUnidad": 1
-  }
-}
-```
-
-**Actualizar Chofer** (`PUT /choferes/{id}`)
+**Crear Turno** (`POST /turnos`)
 
 ```json
 {
-  "nombre": "Carlos",
-  "apellido": "Gómez",
-  "telefono": "0987654321",
-  "activo": false,
-  "unidad": {
-    "idUnidad": 2
-  }
+  "horario": "08:00:00",
+  "activo": true
 }
 ```
-
 ---
-
 ### Unidades
 
 | Método | Ruta             | Descripción                     |
@@ -141,17 +119,35 @@ server:
 {
   "nombre": "Unidad C",
   "descripcion": "Ruta de prueba",
-  "activo": true
+  "activo": true,
+  "turno": {
+    "idTurno": 1
+  }
 }
 ```
 
-**Actualizar Unidad** (`PUT /unidades/{id}`)
+---
+
+### Choferes
+
+| Método | Ruta             | Descripción                    |
+| ------ | ---------------- | ------------------------------ |
+| GET    | `/choferes`      | Listar todos los choferes      |
+| GET    | `/choferes/{id}` | Obtener un chofer por su ID    |
+| POST   | `/choferes`      | Crear un nuevo chofer          |
+| PUT    | `/choferes/{id}` | Actualizar un chofer existente |
+
+**Crear Chofer** (`POST /choferes`)
 
 ```json
 {
-  "nombre": "Unidad C Modificada",
-  "descripcion": "Descripción actualizada",
-  "activo": false
+   "nombre": "Juan",
+   "apellido": "Pérez",
+   "telefono": "1234567890",
+   "activo": true,
+   "unidad": {
+      "idUnidad": 1
+   }
 }
 ```
 
@@ -181,9 +177,10 @@ server:
 | ------ | ---------------- | ------------------------------- |
 | GET    | `/paquetes`      | Listar todos los paquetes       |
 | GET    | `/paquetes/{id}` | Obtener un paquete por su ID    |
+| POST   | `/paquetes`      | Crear un nuevo paquete          |
 | PUT    | `/paquetes/{id}` | Actualizar un paquete existente |
 
-**Actualizar Paquete** (`PUT /paquetes/{id}`)
+**Crear Paquete** (`POST /paquetes`)
 
 ```json
 {
@@ -192,9 +189,11 @@ server:
   "importe": 250.0,
   "contenido": "Documentos",
   "folio": "123e4567-e89b-12d3-a456-426614174000",
-  "posCobrar": false,
+  "porCobrar": false,
   "estado": true,
-  "viaje": { "idViaje": 1 }
+  "viaje": {
+    "idViaje": 1
+  }
 }
 ```
 
@@ -206,9 +205,10 @@ server:
 | ------ | ----------------- | -------------------------------- |
 | GET    | `/pasajeros`      | Listar todos los pasajeros       |
 | GET    | `/pasajeros/{id}` | Obtener un pasajero por su ID    |
+| POST   | `/pasajeros`      | Crear un nuevo pasajero          |
 | PUT    | `/pasajeros/{id}` | Actualizar un pasajero existente |
 
-**Actualizar Pasajero** (`PUT /pasajeros/{id}`)
+**Crear Pasajero** (`POST /pasajeros`)
 
 ```json
 {
@@ -217,21 +217,23 @@ server:
   "tipo": "ADULTO",
   "asiento": 5,
   "folio": "123e4567-e89b-12d3-a456-426614174001",
-  "importe": 120.0,
   "tipoPago": "CONTADO",
-  "viaje": { "idViaje": 1 }
+  "viaje": {
+    "idViaje": 1
+  }
 }
 ```
+#### ***El importe se calcula automáticamente***
 
 ---
 
 ### Viajes
 
-| Método | Ruta                | Descripción                                   |
-| ------ | ------------------- | --------------------------------------------- |
-| GET    | `/viajes`           | Listar todos los viajes                       |
-| GET    | `/viajes/{idViaje}` | Obtener un viaje por su ID                    |
-| POST   | `/viajes`           | Crear un nuevo viaje con pasajeros y paquetes |
+| Método | Ruta                | Descripción                      |
+| ------ | ------------------- | -------------------------------- |
+| GET    | `/viajes`           | Listar todos los viajes          |
+| GET    | `/viajes/{idViaje}` | Obtener un viaje por su ID       |
+| POST   | `/viajes`           | Crear un nuevo viaje (metadatos) |
 
 **Crear Viaje** (`POST /viajes`)
 
@@ -239,30 +241,10 @@ server:
 {
   "origen": "Tuxtla Gutiérrez",
   "destino": "Yajalón",
-  "descuento": { "idDescuento": 1 },
-  "unidad": { "idUnidad": 2 },
-  "pasajeros": [
-    {
-      "nombre": "Ana",
-      "apellido": "López",
-      "tipo": "ADULTO",
-      "asiento": 5,
-      "folio": "123e4567-e89b-12d3-a456-426614174001",
-      "importe": 120.0,
-      "tipoPago": "CONTADO"
-    }
-  ],
-  "paquetes": [
-    {
-      "remitente": "Empresa A",
-      "destinatario": "Cliente B",
-      "importe": 250.0,
-      "contenido": "Documentos",
-      "folio": "123e4567-e89b-12d3-a456-426614174000",
-      "posCobrar": false,
-      "estado": true
-    }
-  ]
+  "fechaSalida": "2025-07-20T08:00:00",
+  "unidad": {
+    "idUnidad": 2
+  }
 }
 ```
 
@@ -273,8 +255,8 @@ server:
   "idViaje": 1,
   "origen": "Tuxtla Gutiérrez",
   "destino": "Yajalón",
-  "totalPasajeros": 120.0,
-  "totalPaqueteria": 250.0,
+  "totalPasajeros": 5,
+  "totalPaqueteria": 2,
   "comision": 34.0,
   "totalPorCobrar": 336.0,
   "totalPagadoYajalon": 336.0,
@@ -289,7 +271,12 @@ server:
     "idUnidad": 2,
     "nombre": "Unidad C",
     "descripcion": "Ruta de prueba",
-    "activo": true
+    "activo": true,
+    "turno": {
+      "idTurno": 1,
+      "horario": "08:00:00",
+      "activo": true
+    }
   },
   "totalViaje": 370.0
 }
@@ -318,4 +305,4 @@ server:
 
 Este proyecto está bajo la [MIT License](LICENSE)
 
-hermano
+
