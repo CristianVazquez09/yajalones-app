@@ -150,6 +150,7 @@ server:
    }
 }
 ```
+#### La unidad puede ser ***nula***
 
 ---
 
@@ -188,12 +189,26 @@ server:
   "destinatario": "Cliente B",
   "importe": 250.0,
   "contenido": "Documentos",
-  "folio": "123e4567-e89b-12d3-a456-426614174000",
   "porCobrar": false,
   "estado": true,
   "viaje": {
     "idViaje": 1
   }
+}
+```
+Cada que se agrega un paquete se actualiza el viaje
+
+**Obtener Paquete** (`GET /paquetes/{idPaquete}`)
+```json
+{
+   "idPaquete": 1, 
+   "remitente": "Empresa A",
+   "destinatario": "Cliente B",
+   "importe": 250.0,
+   "contenido": "Documentos",
+   "folio": "D3B3BC8C",
+   "porCobrar": false,
+   "estado": true
 }
 ```
 
@@ -216,15 +231,32 @@ server:
   "apellido": "López",
   "tipo": "ADULTO",
   "asiento": 5,
-  "folio": "123e4567-e89b-12d3-a456-426614174001",
   "tipoPago": "CONTADO",
   "viaje": {
     "idViaje": 1
   }
 }
 ```
-#### ***El importe se calcula automáticamente***
+Cada que se agrega un paquete se actualiza el viaje
 
+#### ***El importe se calcula automáticamente***
+#### Los tipos de pago aceptados son `PAGAR_SCLC`, `PAGAR_YAJALON` y `PAGADO`
+
+
+**Obtener Pasajero** (`GET /pasajeros/{idPasajero}`)
+
+```json
+{
+   "idPasajero": 1,
+   "nombre": "Cristian",
+   "apellido": "Vazquez",
+   "tipo": "ADULTO",
+   "importe": 350.0,
+   "asiento": 2,
+   "folio": "1AA08739",
+   "tipoPago": "PAGAR_YAJALON"
+}
+```
 ---
 
 ### Viajes
@@ -239,12 +271,12 @@ server:
 
 ```json
 {
-  "origen": "Tuxtla Gutiérrez",
-  "destino": "Yajalón",
-  "fechaSalida": "2025-07-20T08:00:00",
-  "unidad": {
-    "idUnidad": 2
-  }
+   "origen": "Yajalón",
+   "destino": "Tuxtla Gutiérrez",
+   "fechaSalida": "2025-07-18T07:00:00",
+   "unidad": {
+      "idUnidad": 1
+   }
 }
 ```
 
@@ -252,36 +284,54 @@ server:
 
 ```json
 {
-  "idViaje": 1,
-  "origen": "Tuxtla Gutiérrez",
-  "destino": "Yajalón",
-  "totalPasajeros": 5,
-  "totalPaqueteria": 2,
-  "comision": 34.0,
-  "totalPorCobrar": 336.0,
-  "totalPagadoYajalon": 336.0,
-  "totalPagadoSclc": 0.0,
-  "descuento": {
-    "idDescuento": 1,
-    "concepto": "Promoción Verano",
-    "descripcion": "Descuento del 10% en viajes seleccionados",
-    "importe": 150.0
-  },
-  "unidad": {
-    "idUnidad": 2,
-    "nombre": "Unidad C",
-    "descripcion": "Ruta de prueba",
-    "activo": true,
-    "turno": {
-      "idTurno": 1,
-      "horario": "08:00:00",
-      "activo": true
-    }
-  },
-  "totalViaje": 370.0
+   "idViaje": 1,
+   "origen": "Yajalón",
+   "destino": "Tuxtla Gutiérrez",
+   "totalPasajeros": 350.0,
+   "totalPaqueteria": 250.75,
+   "comision": 340.0,
+   "totalPorCobrar": 250.75,
+   "totalPagadoYajalon": 350.0,
+   "totalPagadoSclc": 0.0,
+   "descuento": null,
+   "unidad": {
+      "idUnidad": 1,
+      "nombre": "U1",
+      "descripcion": "Unidad en buen estado",
+      "activo": true,
+      "turno": {
+         "idTurno": 1,
+         "horario": "16:00:00",
+         "activo": true
+      }
+   },
+   "pasajeros": [
+      {
+         "idPasajero": 1,
+         "nombre": "Cristian",
+         "apellido": "Vazquez",
+         "tipo": "ADULTO",
+         "asiento": 2,
+         "folio": "34DFAD8A",
+         "tipoPago": "PAGAR_YAJALON"
+      }
+   ],
+   "paquetes": [
+      {
+         "idPaquete": 1,
+         "remitente": "Empresa XYZ",
+         "destinatario": "Cliente ABC",
+         "importe": 250.75,
+         "contenido": "Documentos legales",
+         "folio": "D3B3BC8C",
+         "porCobrar": true,
+         "estado": false
+      }
+   ],
+   "totalViaje": 600.75
 }
 ```
-
+Los pasajeros y paquetes se van agregando automáticamente mientras se registren 
 ## Contribuciones
 
 1. Crea una rama con tu feature o fix:

@@ -22,6 +22,7 @@ public class PasajeroResponseDTO {
     private String nombre;
     private String apellido;
     private TipoPasajero tipo;
+    private double importe;
     private int asiento;
     private String folio;
     private TipoPago tipoPago;
