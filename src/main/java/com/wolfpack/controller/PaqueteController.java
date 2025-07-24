@@ -44,7 +44,7 @@ public class PaqueteController {
     @PutMapping("/{id}")
     public ResponseEntity<PaqueteResponseDTO> actualizar(@Valid @PathVariable("id") Integer id, @RequestBody PaqueteRequestDTO dto) throws Exception{
         dto.setIdPaquete(id);
-        Paquete obj = service.actualizar(id, convertToEntityRequest(dto));
+        Paquete obj = service.actualizarPaquete(id, convertToEntityRequest(dto));
 
         return ResponseEntity.ok(convertToDtoResponse(obj));
     }
@@ -56,6 +56,12 @@ public class PaqueteController {
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(obj.getIdPaquete()).toUri();
 
         return ResponseEntity.created(location).build();
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> eliminar(@PathVariable("id") Integer id) throws Exception{
+        service.eliminar(id);
+        return ResponseEntity.noContent().build();
     }
 
     private PaqueteResponseDTO convertToDtoResponse(Paquete obj){
