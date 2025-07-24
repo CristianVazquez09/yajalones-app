@@ -24,6 +24,6 @@ public class PasajeroDTO {
     private int asiento;
     private UUID folio;
     private TipoPago tipoPago;
-    private ViajeDTO viaje;
+    private ViajeResponseDTO viaje;
 
 }

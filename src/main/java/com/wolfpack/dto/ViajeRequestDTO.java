@@ -12,7 +12,7 @@ import java.util.Locale;
 @AllArgsConstructor
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-public class ViajeDTO {
+public class ViajeRequestDTO {
 
     private Integer idViaje;
     private String origen;

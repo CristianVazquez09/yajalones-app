@@ -34,8 +34,8 @@ public class Pasajero {
     @Column(nullable = false)
     private int asiento;
 
-    @Column(nullable = false)
-    private UUID folio;
+    @Column(nullable = false, length = 9)
+    private String folio;
 
     @Column(nullable = false, columnDefinition = "decimal(6,2)")
     private double importe;

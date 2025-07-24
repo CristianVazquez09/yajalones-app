@@ -22,5 +22,5 @@ public class PaqueteDTO {
     private UUID folio;
     private boolean porCobrar;
     private boolean estado;
-    private ViajeDTO viaje;
+    private ViajeResponseDTO viaje;
 }

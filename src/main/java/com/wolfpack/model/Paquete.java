@@ -33,8 +33,8 @@ public class Paquete {
     @Column(nullable = false, columnDefinition = "TEXT")
     private String contenido;
 
-    @Column(nullable = false)
-    private UUID folio;
+    @Column(nullable = false, length = 9)
+    private String folio;
 
     @Column(nullable = false)
     private boolean porCobrar;
