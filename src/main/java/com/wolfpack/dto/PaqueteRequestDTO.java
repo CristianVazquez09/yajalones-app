@@ -1,7 +1,6 @@
 package com.wolfpack.dto;
 
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -13,16 +12,14 @@ import java.util.UUID;
 @AllArgsConstructor
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-public class PaqueteResponseDTO {
+public class PaqueteRequestDTO {
 
     private Integer idPaquete;
     private String remitente;
     private String destinatario;
     private double importe;
     private String contenido;
-    private String folio;
     private boolean porCobrar;
     private boolean estado;
-    @JsonBackReference
-    private ViajeResponseDTO viaje;
+    private ViajeRequestDTO viaje;
 }

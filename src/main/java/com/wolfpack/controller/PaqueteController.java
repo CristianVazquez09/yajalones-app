@@ -1,9 +1,11 @@
 package com.wolfpack.controller;
 
-import com.wolfpack.dto.PaqueteDTO;
-import com.wolfpack.dto.PaqueteDTO;
+import com.wolfpack.dto.PaqueteRequestDTO;
+import com.wolfpack.dto.PaqueteResponseDTO;
+import com.wolfpack.dto.PasajeroRequestDTO;
+import com.wolfpack.dto.PasajeroResponseDTO;
 import com.wolfpack.model.Paquete;
-import com.wolfpack.model.Paquete;
+import com.wolfpack.model.Pasajero;
 import com.wolfpack.service.IPaqueteService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -26,41 +28,41 @@ public class PaqueteController {
     private final ModelMapper modelMapper;
 
     @GetMapping
-    public ResponseEntity<List<PaqueteDTO>> buscarTodos() throws Exception{
-        List<PaqueteDTO> list = service.buscarTodos().stream().map(this::convertToDto).toList();
+    public ResponseEntity<List<PaqueteResponseDTO>> buscarTodos() throws Exception{
+        List<PaqueteResponseDTO> list = service.buscarTodos().stream().map(this::convertToDtoResponse).toList();
 
         return ResponseEntity.ok(list);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<PaqueteDTO> buscarPorId(@PathVariable("id") Integer id) throws Exception {
+    public ResponseEntity<PaqueteResponseDTO> buscarPorId(@PathVariable("id") Integer id) throws Exception {
         Paquete obj = service.buscarPorId(id);
 
-        return ResponseEntity.ok(convertToDto(obj));
+        return ResponseEntity.ok(convertToDtoResponse(obj));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<PaqueteDTO> actualizar(@Valid @PathVariable("id") Integer id, @RequestBody PaqueteDTO dto) throws Exception{
+    public ResponseEntity<PaqueteResponseDTO> actualizar(@Valid @PathVariable("id") Integer id, @RequestBody PaqueteRequestDTO dto) throws Exception{
         dto.setIdPaquete(id);
-        Paquete obj = service.actualizar(id, convertToEntity(dto));
+        Paquete obj = service.actualizar(id, convertToEntityRequest(dto));
 
-        return ResponseEntity.ok(convertToDto(obj));
+        return ResponseEntity.ok(convertToDtoResponse(obj));
     }
 
     @PostMapping
-    public ResponseEntity<Void> guardar(@Valid @RequestBody PaqueteDTO dto) throws Exception{
-        Paquete obj = service.guardarPaquete(convertToEntity(dto));
+    public ResponseEntity<Void> guardar(@Valid @RequestBody PaqueteRequestDTO dto) throws Exception{
+        Paquete obj = service.guardarPaquete(convertToEntityRequest(dto));
 
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(obj.getIdPaquete()).toUri();
 
         return ResponseEntity.created(location).build();
     }
 
-    private PaqueteDTO convertToDto(Paquete obj){
-        return modelMapper.map(obj, PaqueteDTO.class);
+    private PaqueteResponseDTO convertToDtoResponse(Paquete obj){
+        return modelMapper.map(obj, PaqueteResponseDTO.class);
     }
 
-    private Paquete convertToEntity(PaqueteDTO dto){
+    private Paquete convertToEntityRequest(PaqueteRequestDTO dto){
         return modelMapper.map(dto, Paquete.class);
     }
 

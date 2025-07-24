@@ -25,20 +25,11 @@ public class ViajeResponseDTO {
     private double totalPagadoSclc;
     private DescuentoDTO descuento;
     private UnidadDTO unidad;
+    @JsonManagedReference
+    private List<PasajeroResponseDTO> pasajeros;
+    @JsonManagedReference
+    private List<PaqueteResponseDTO> paquetes;
     private double totalViaje;
 
-    //private double totalPasajeros;
-    //private double totalPaqueteria;
-    //private double comision;
-    //private double totalPorCobrar;
-    //private double totalPagadoYajalon;
-    //private double totalPagadoSclc;
-    //private DescuentoDTO descuento;
-
-    //private double totalViaje;
-    /*@JsonManagedReference
-    private List<PasajeroDTO> pasajeros;
-    @JsonManagedReference
-    private List<PaqueteDTO> paquetes;*/
 
 }

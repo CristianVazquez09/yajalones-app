@@ -1,6 +1,6 @@
 package com.wolfpack.controller;
 
-import com.wolfpack.dto.ViajeDTO;
+import com.wolfpack.dto.ViajeRequestDTO;
 import com.wolfpack.dto.ViajeResponseDTO;
 import com.wolfpack.model.Viaje;
 import com.wolfpack.service.IViajeService;
@@ -38,7 +38,7 @@ public class ViajeController {
     }
 
     @PostMapping
-    public ResponseEntity<Void> guardarViaje (@Valid @RequestBody ViajeDTO dto) throws Exception{
+    public ResponseEntity<Void> guardarViaje (@Valid @RequestBody ViajeRequestDTO dto) throws Exception{
         Viaje obj = service.guardarViaje(convertToEntityRequest(dto));
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(obj.getIdViaje()).toUri();
 
@@ -46,11 +46,7 @@ public class ViajeController {
     }
 
 
-    private ViajeDTO convertToDtoRequest(Viaje obj){
-        return modelMapper.map(obj, ViajeDTO.class);
-    }
-
-    private Viaje convertToEntityRequest(ViajeDTO dto){
+    private Viaje convertToEntityRequest(ViajeRequestDTO dto){
         return modelMapper.map(dto, Viaje.class);
     }
 
@@ -58,9 +54,6 @@ public class ViajeController {
         return modelMapper.map(obj, ViajeResponseDTO.class);
     }
 
-    private Viaje convertToEntityResponse(ViajeResponseDTO dto){
-        return modelMapper.map(dto, Viaje.class);
-    }
 
 
 }
