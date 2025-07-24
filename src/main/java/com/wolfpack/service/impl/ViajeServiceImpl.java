@@ -4,7 +4,6 @@ import com.wolfpack.model.Paquete;
 import com.wolfpack.model.Pasajero;
 import com.wolfpack.model.Viaje;
 import com.wolfpack.model.enums.TipoPago;
-import com.wolfpack.model.enums.TipoPasajero;
 import com.wolfpack.repo.IViajeRepo;
 import com.wolfpack.repo.IGenericRepo;
 import com.wolfpack.service.IViajeService;
@@ -14,10 +13,7 @@ import org.springframework.stereotype.Service;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -61,8 +57,8 @@ public class ViajeServiceImpl extends CRUDImpl<Viaje, Integer> implements IViaje
         pasajeros.add(pasajero);
 
         double totalPasajeros = sumarImportes(pasajeros);
-        double totalPagoSCLC = sumarPorTipoPago(pasajeros, TipoPago.PAGAR_SCLC);
-        double totalPagoYajalon = sumarPorTipoPago(pasajeros, TipoPago.PAGAR_YAJALON);
+        double totalPagoSCLC = sumarPorTipoPago(pasajeros, TipoPago.SCLC);
+        double totalPagoYajalon = sumarPorTipoPago(pasajeros, TipoPago.DESTINO);
 
         viaje.setTotalPasajeros(totalPasajeros);
         viaje.setTotalPagadoSclc(totalPagoSCLC);

@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @NoArgsConstructor
@@ -17,6 +18,7 @@ public class ViajeResponseDTO {
     private Integer idViaje;
     private String origen;
     private String destino;
+    private LocalDateTime fechaSalida;
     private double totalPasajeros;
     private double totalPaqueteria;
     private double comision;

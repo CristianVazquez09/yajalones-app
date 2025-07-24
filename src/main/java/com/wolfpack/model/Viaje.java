@@ -53,8 +53,8 @@ public class Viaje {
     @JoinColumn(name = "id_descuento",unique = true)
     private Descuento descuento;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, optional = false)
-    @JoinColumn(name = "id_unidad",unique = true, nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, optional = false)
+    @JoinColumn(name = "id_unidad", nullable = false)
     private Unidad unidad;
 
     @Column(nullable = false, columnDefinition = "decimal(8,2)")
