@@ -5,6 +5,7 @@ import com.wolfpack.repo.IGenericRepo;
 import com.wolfpack.repo.IPaqueteRepo;
 import com.wolfpack.service.IPaqueteService;
 import com.wolfpack.service.IViajeService;
+import com.wolfpack.util.GeneradorFolio;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -23,7 +24,7 @@ public class PaqueteServiceImpl extends CRUDImpl<Paquete, Integer> implements IP
 
     @Override
     public Paquete guardarPaquete(Paquete paquete) {
-        paquete.setFolio(UUID.randomUUID());
+        paquete.setFolio(GeneradorFolio.generarFolio());
 
         Paquete paqueteGuardado = repo.save(paquete);
         viajeService.agregarPaquetes(paquete);

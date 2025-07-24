@@ -7,6 +7,7 @@ import com.wolfpack.repo.IGenericRepo;
 import com.wolfpack.repo.IViajeRepo;
 import com.wolfpack.service.IPasajeroService;
 import com.wolfpack.service.IViajeService;
+import com.wolfpack.util.GeneradorFolio;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -29,7 +30,7 @@ public class PasajeroServiceImpl extends CRUDImpl<Pasajero, Integer> implements 
         double importe = pasajero.getTipo().getTarifaBase();
         //Asignar el importe al pasajero
         pasajero.setImporte(importe);
-        pasajero.setFolio(UUID.randomUUID());
+        pasajero.setFolio(GeneradorFolio.generarFolio());
 
         // Guardar el pasajero en bd
         Pasajero pasajeroGuardado = repo.save(pasajero);

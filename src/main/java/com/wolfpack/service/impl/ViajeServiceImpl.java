@@ -40,14 +40,7 @@ public class ViajeServiceImpl extends CRUDImpl<Viaje, Integer> implements IViaje
         double totalPaquetes = viaje.getTotalPaqueteria();
 
         double ingresoTotal = totalPasajeros + totalPaquetes;
-        if (ingresoTotal <= COMISION) {
-            throw new IllegalArgumentException(
-                    String.format(
-                            "La suma de ingresos (%.2f + %.2f = %.2f) debe ser mayor que la comisión (%.2f)",
-                            totalPasajeros, totalPaquetes, ingresoTotal, COMISION
-                    )
-            );
-        }
+
         viaje.setTotalViaje(ingresoTotal);
 
         return repo.save(viaje);
