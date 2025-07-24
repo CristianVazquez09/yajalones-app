@@ -63,6 +63,17 @@ public class PasajeroServiceImpl extends CRUDImpl<Pasajero, Integer> implements 
         return repo.save(pasajero);
     }
 
+    @Override
+    public void eliminarPasajero(Integer idPasajero) throws Exception {
+        Pasajero pasajero =  repo.findById(idPasajero).orElseThrow(() -> new ModelNotFoundException("ID NOT FOUND: " + idPasajero));
+        Integer idViaje = pasajero.getViaje().getIdViaje();
+        repo.deleteById(idPasajero);
+        viajeService.actualizarCostosViaje(idViaje);
+
+
+    }
+
+
     private double calcularImportePorRuta(
             TipoPasajero tipo,
             String origen,

@@ -3,6 +3,7 @@ package com.wolfpack.service.impl;
 import com.wolfpack.exception.ModelNotFoundException;
 import com.wolfpack.model.Paquete;
 import com.wolfpack.model.Paquete;
+import com.wolfpack.model.Paquete;
 import com.wolfpack.repo.IGenericRepo;
 import com.wolfpack.repo.IPaqueteRepo;
 import com.wolfpack.service.IPaqueteService;
@@ -42,5 +43,15 @@ public class PaqueteServiceImpl extends CRUDImpl<Paquete, Integer> implements IP
         paquete.setImporte(paqueteEncontrado.getImporte());
 
         return repo.save(paquete);
+    }
+
+    @Override
+    public void eliminarPaquete(Integer idPaquete) throws Exception {
+        Paquete paquete =  repo.findById(idPaquete).orElseThrow(() -> new ModelNotFoundException("ID NOT FOUND: " + idPaquete));
+        Integer idViaje = paquete.getViaje().getIdViaje();
+        repo.deleteById(idPaquete);
+        viajeService.actualizarCostosViaje(idViaje);
+
+
     }
 }

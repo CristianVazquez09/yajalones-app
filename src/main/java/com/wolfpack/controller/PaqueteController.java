@@ -60,7 +60,7 @@ public class PaqueteController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminar(@PathVariable("id") Integer id) throws Exception{
-        service.eliminar(id);
+        service.eliminarPaquete(id);
         return ResponseEntity.noContent().build();
     }
 

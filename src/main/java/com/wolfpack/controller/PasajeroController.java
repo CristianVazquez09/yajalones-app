@@ -56,7 +56,7 @@ public class PasajeroController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminar(@PathVariable("id") Integer id) throws Exception{
-        service.eliminar(id);
+        service.eliminarPasajero(id);
         return ResponseEntity.noContent().build();
     }
 
