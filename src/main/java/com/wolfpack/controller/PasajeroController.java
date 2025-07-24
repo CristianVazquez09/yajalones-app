@@ -49,9 +49,15 @@ public class PasajeroController {
     @PutMapping("/{id}")
     public ResponseEntity<PasajeroResponseDTO> actualizar(@Valid @PathVariable("id") Integer id, @RequestBody PasajeroRequestDTO dto) throws Exception{
         dto.setIdPasajero(id);
-        Pasajero obj = service.actualizar(id, convertToEntityRequest(dto));
+        Pasajero obj = service.actualizarPasajero(id, convertToEntityRequest(dto));
 
         return ResponseEntity.ok(convertToDtoResponse(obj));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> eliminar(@PathVariable("id") Integer id) throws Exception{
+        service.eliminar(id);
+        return ResponseEntity.noContent().build();
     }
 
     private PasajeroResponseDTO convertToDtoResponse(Pasajero obj){

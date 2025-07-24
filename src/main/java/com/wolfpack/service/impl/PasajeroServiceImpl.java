@@ -1,6 +1,8 @@
 package com.wolfpack.service.impl;
 
+import com.wolfpack.exception.ModelNotFoundException;
 import com.wolfpack.model.Pasajero;
+import com.wolfpack.model.Viaje;
 import com.wolfpack.model.enums.TipoPasajero;
 import com.wolfpack.repo.IPasajeroRepo;
 import com.wolfpack.repo.IGenericRepo;
@@ -25,21 +27,66 @@ public class PasajeroServiceImpl extends CRUDImpl<Pasajero, Integer> implements 
     }
 
     @Override
-    public Pasajero guardarPasajero(Pasajero pasajero) {
-        // Calcular el importe
-        double importe = pasajero.getTipo().getTarifaBase();
-        //Asignar el importe al pasajero
+    public Pasajero guardarPasajero(Pasajero pasajero) throws Exception {
+        Viaje viaje = viajeService.buscarPorId(pasajero.getViaje().getIdViaje());
+        if (viaje == null) {
+            throw new IllegalArgumentException("El viaje no puede ser nulo");
+        }
+
+        // 1. Calcula importe según origen/destino
+        double importe = calcularImportePorRuta(
+                pasajero.getTipo(),
+                viaje.getOrigen(),
+                viaje.getDestino()
+        );
+
+        // 2. Asigna importe y folio
         pasajero.setImporte(importe);
         pasajero.setFolio(GeneradorFolio.generarFolio());
 
-        // Guardar el pasajero en bd
-        Pasajero pasajeroGuardado = repo.save(pasajero);
+        // 3. Persiste pasajero
+        Pasajero guardado = repo.save(pasajero);
 
-        // actualizar el viaje
-        viajeService.agregarPasajero(pasajero);
+        // 4. Asocia al viaje y actualiza totales
+        viajeService.agregarPasajero(guardado);
 
-
-        return pasajeroGuardado;
+        return guardado;
     }
+
+    @Override
+    public Pasajero actualizarPasajero(Integer id, Pasajero pasajero) throws Exception {
+        Pasajero pasajeroEncontrado = repo.findById(id).orElseThrow(() -> new ModelNotFoundException("ID NOT FOUND: " + id));
+
+        pasajero.setFolio(pasajeroEncontrado.getFolio());
+        pasajero.setImporte(pasajeroEncontrado.getImporte());
+
+        return repo.save(pasajero);
+    }
+
+    private double calcularImportePorRuta(
+            TipoPasajero tipo,
+            String origen,
+            String destino
+    ) {
+        String o = origen.trim().toLowerCase();
+        String d = destino.trim().toLowerCase();
+
+        boolean esSC_YA = (o.equals("san cristobal de las casas") && d.equals("yajalon"))
+                || (o.equals("yajalon")                && d.equals("san cristobal de las casas"));
+
+        boolean esTU_YA = (o.equals("tuxtla gutierrez") && d.equals("yajalon"))
+                || (o.equals("yajalon") && d.equals("tuxtla gutierrez"));
+
+        if (esSC_YA) {
+            return tipo.getTarifaYajalonSanCristobal();
+        }
+        else if (esTU_YA) {
+            return tipo.getTarifaYajalonTuxtla();
+        }
+        throw new IllegalArgumentException(
+                String.format("Ruta no soportada: %s → %s", origen, destino)
+        );
+    }
+
 
 }
