@@ -11,6 +11,7 @@ Servidor para el sistema de transporte de la empresa "Los Yajalones"
 * [Configuración](#configuración)
 * [Estructura de Carpetas](#estructura-de-carpetas)
 * [Endpoints Principales](#endpoints-principales)
+* [Enumeraciones](#enumeraciones)
 * [Contribuciones](#contribuciones)
 * [Licencia](#licencia)
 
@@ -20,7 +21,8 @@ Este proyecto proporciona un back-end en Java con Spring Boot que:
 
 * Expone API REST para las operaciones CRUD necesarias.
 * Se conecta a una base de datos PostgreSQL.
-* Proporciona métodos para las operaciones del sistema.
+* Aplica lógica de negocio para cálculo automático de tarifas, totales y comisiones.
+* Incluye en las respuestas la fecha de salida y los totales calculados en servidor.
 
 ## Tecnologías
 
@@ -59,13 +61,13 @@ Ubicación: `src/main/resources/application-dev.yml`
 
 ```yaml
 spring:
-   datasource:
-      url: [URL_BD]
-      username: [USUARIO_BD]
-      password: [CONTRASEÑA_BD]
+  datasource:
+    url: [URL_BD]
+    username: [USUARIO_BD]
+    password: [CONTRASEÑA_BD]
 
 server:
-   port: 8081
+  port: 8081
 ```
 
 > **Nota**:
@@ -86,6 +88,9 @@ server:
 ```
 
 ## Endpoints Principales
+
+---
+
 ### Turnos
 
 | Método | Ruta           | Descripción                   |
@@ -103,7 +108,9 @@ server:
   "activo": true
 }
 ```
+
 ---
+
 ### Unidades
 
 | Método | Ruta             | Descripción                     |
@@ -141,16 +148,17 @@ server:
 
 ```json
 {
-   "nombre": "Juan",
-   "apellido": "Pérez",
-   "telefono": "1234567890",
-   "activo": true,
-   "unidad": {
-      "idUnidad": 1
-   }
+  "nombre": "Juan",
+  "apellido": "Pérez",
+  "telefono": "1234567890",
+  "activo": true,
+  "unidad": {
+    "idUnidad": 1
+  }
 }
 ```
-#### La unidad puede ser ***nula***
+
+> **Nota**: La unidad puede ser *nula* (no asignada).
 
 ---
 
@@ -180,6 +188,7 @@ server:
 | GET    | `/paquetes/{id}` | Obtener un paquete por su ID    |
 | POST   | `/paquetes`      | Crear un nuevo paquete          |
 | PUT    | `/paquetes/{id}` | Actualizar un paquete existente |
+| DELETE | `/paquetes/{id}` | Eliminar un paquete (por ID)    |
 
 **Crear Paquete** (`POST /paquetes`)
 
@@ -187,7 +196,7 @@ server:
 {
   "remitente": "Empresa A",
   "destinatario": "Cliente B",
-  "importe": 250.0,
+  "importe": 250.00,
   "contenido": "Documentos",
   "porCobrar": false,
   "estado": true,
@@ -196,21 +205,8 @@ server:
   }
 }
 ```
-Cada que se agrega un paquete se actualiza el viaje
 
-**Obtener Paquete** (`GET /paquetes/{idPaquete}`)
-```json
-{
-   "idPaquete": 1, 
-   "remitente": "Empresa A",
-   "destinatario": "Cliente B",
-   "importe": 250.0,
-   "contenido": "Documentos",
-   "folio": "D3B3BC8C",
-   "porCobrar": false,
-   "estado": true
-}
-```
+> Al agregar o eliminar un paquete, el servidor actualiza automáticamente los totales del viaje.
 
 ---
 
@@ -222,6 +218,7 @@ Cada que se agrega un paquete se actualiza el viaje
 | GET    | `/pasajeros/{id}` | Obtener un pasajero por su ID    |
 | POST   | `/pasajeros`      | Crear un nuevo pasajero          |
 | PUT    | `/pasajeros/{id}` | Actualizar un pasajero existente |
+| DELETE | `/pasajeros/{id}` | Eliminar un pasajero (por ID)    |
 
 **Crear Pasajero** (`POST /pasajeros`)
 
@@ -231,107 +228,101 @@ Cada que se agrega un paquete se actualiza el viaje
   "apellido": "López",
   "tipo": "ADULTO",
   "asiento": 5,
-  "tipoPago": "CONTADO",
+  "tipoPago": "DESTINO",
   "viaje": {
     "idViaje": 1
   }
 }
 ```
-Cada que se agrega un paquete se actualiza el viaje
 
-#### ***El importe se calcula automáticamente***
-#### Los tipos de pago aceptados son `PAGAR_SCLC`, `PAGAR_YAJALON` y `PAGADO`
+> Al agregar o eliminar un pasajero, el servidor actualiza automáticamente los totales del viaje.
+> El **importe** se calcula en servidor según el `TipoPasajero` y la ruta seleccionada.
 
+#### Tipos de pago aceptados
 
-**Obtener Pasajero** (`GET /pasajeros/{idPasajero}`)
+* `SCLC`
+* `PAGADO`
+* `DESTINO`
 
-```json
-{
-   "idPasajero": 1,
-   "nombre": "Cristian",
-   "apellido": "Vazquez",
-   "tipo": "ADULTO",
-   "importe": 350.0,
-   "asiento": 2,
-   "folio": "1AA08739",
-   "tipoPago": "PAGAR_YAJALON"
-}
-```
 ---
 
 ### Viajes
 
-| Método | Ruta                | Descripción                      |
-| ------ | ------------------- | -------------------------------- |
-| GET    | `/viajes`           | Listar todos los viajes          |
-| GET    | `/viajes/{idViaje}` | Obtener un viaje por su ID       |
-| POST   | `/viajes`           | Crear un nuevo viaje (metadatos) |
+| Método | Ruta                | Descripción                              |
+| ------ | ------------------- | ---------------------------------------- |
+| GET    | `/viajes`           | Listar todos los viajes                  |
+| GET    | `/viajes/{idViaje}` | Obtener un viaje por su ID               |
+| POST   | `/viajes`           | Crear un nuevo viaje (metadatos básicos) |
 
 **Crear Viaje** (`POST /viajes`)
 
 ```json
 {
-   "origen": "Yajalón",
-   "destino": "Tuxtla Gutiérrez",
-   "fechaSalida": "2025-07-18T07:00:00",
-   "unidad": {
-      "idUnidad": 1
-   }
+  "origen": "Yajalón",
+  "destino": "Tuxtla Gutiérrez",
+  "fechaSalida": "2025-07-18T07:00:00",
+  "unidad": {
+    "idUnidad": 1
+  }
 }
 ```
 
-**Obtener Viaje** (`GET /viajes/{idViaje}`) – Ejemplo de respuesta:
+#### Validación de Origen y Destino
+
+Solo se permiten estas rutas (insensible a mayúsculas/minúsculas):
+
+* **San Cristobal de las Casas** ↔ **Yajalon**
+* **Tuxtla Gutierrez** ↔ **Yajalon**
+
+
+
+**Obtener Viaje** (`GET /viajes/{idViaje}`)
 
 ```json
 {
-   "idViaje": 1,
-   "origen": "Yajalón",
-   "destino": "Tuxtla Gutiérrez",
-   "totalPasajeros": 350.0,
-   "totalPaqueteria": 250.75,
-   "comision": 340.0,
-   "totalPorCobrar": 250.75,
-   "totalPagadoYajalon": 350.0,
-   "totalPagadoSclc": 0.0,
-   "descuento": null,
-   "unidad": {
-      "idUnidad": 1,
-      "nombre": "U1",
-      "descripcion": "Unidad en buen estado",
-      "activo": true,
-      "turno": {
-         "idTurno": 1,
-         "horario": "16:00:00",
-         "activo": true
-      }
-   },
-   "pasajeros": [
-      {
-         "idPasajero": 1,
-         "nombre": "Cristian",
-         "apellido": "Vazquez",
-         "tipo": "ADULTO",
-         "asiento": 2,
-         "folio": "34DFAD8A",
-         "tipoPago": "PAGAR_YAJALON"
-      }
-   ],
-   "paquetes": [
-      {
-         "idPaquete": 1,
-         "remitente": "Empresa XYZ",
-         "destinatario": "Cliente ABC",
-         "importe": 250.75,
-         "contenido": "Documentos legales",
-         "folio": "D3B3BC8C",
-         "porCobrar": true,
-         "estado": false
-      }
-   ],
-   "totalViaje": 600.75
+  "idViaje": 1,
+  "origen": "Yajalón",
+  "destino": "Tuxtla Gutiérrez",
+  "fechaSalida": "2025-07-18T07:00:00",
+  "totalPasajeros": 350.00,
+  "totalPaqueteria": 250.75,
+  "comision": 340.00,
+  "totalPorCobrar": 250.75,
+  "totalPagadoYajalon": 350.00,
+  "totalPagadoSclc": 0.00,
+  "descuento": null,
+  "unidad": { … },
+  "pasajeros": [ … ],
+  "paquetes": [ … ],
+  "totalViaje": 600.75
 }
 ```
-Los pasajeros y paquetes se van agregando automáticamente mientras se registren 
+
+> La respuesta incluye los totales calculados en servidor.
+
+## Enumeraciones
+
+#### TipoPasajero
+
+```java
+@Getter
+public enum TipoPasajero {
+    ADULTO(320.0, 350.0),
+    NIÑO(290.0, 290.0),
+    INCENT_INAPAM(310.0, 310.0);
+
+    private final double tarifaYajalonSanCristobal;
+    private final double tarifaYajalonTuxtla;
+
+    TipoPasajero(double tarifaYajalonSanCristobal, double tarifaYajalonTuxtla) {
+        this.tarifaYajalonSanCristobal = tarifaYajalonSanCristobal;
+        this.tarifaYajalonTuxtla   = tarifaYajalonTuxtla;
+    }
+}
+```
+
+*El importe de cada pasajero se calcula automáticamente según el `TipoPasajero` y la ruta seleccionada.*
+
 ## Contribuciones
 
 1. Crea una rama con tu feature o fix:
@@ -344,7 +335,7 @@ Los pasajeros y paquetes se van agregando automáticamente mientras se registren
    ```bash
    git commit -m "feat: descripción breve de la funcionalidad"
    ```
-3. Push a tu rama:
+3. Haz push a tu rama:
 
    ```bash
    git push origin feature/nombre-feature
@@ -353,6 +344,6 @@ Los pasajeros y paquetes se van agregando automáticamente mientras se registren
 
 ## Licencia
 
-Este proyecto está bajo la [MIT License](LICENSE)
+Este proyecto está bajo la [MIT License](LICENSE).
 
-
+hermano
