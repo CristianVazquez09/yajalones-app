@@ -45,6 +45,12 @@ public class ViajeController {
         return ResponseEntity.created(location).build();
     }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> eliminar(@PathVariable("id") Integer id) throws Exception{
+        service.eliminar(id);
+        return ResponseEntity.noContent().build();
+    }
+
 
     private Viaje convertToEntityRequest(ViajeRequestDTO dto){
         return modelMapper.map(dto, Viaje.class);

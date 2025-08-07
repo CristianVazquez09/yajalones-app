@@ -3,6 +3,7 @@ package com.wolfpack.service.impl;
 import com.wolfpack.exception.ModelNotFoundException;
 import com.wolfpack.model.Pasajero;
 import com.wolfpack.model.Viaje;
+import com.wolfpack.model.enums.TipoPago;
 import com.wolfpack.model.enums.TipoPasajero;
 import com.wolfpack.repo.IPasajeroRepo;
 import com.wolfpack.repo.IGenericRepo;
@@ -33,12 +34,12 @@ public class PasajeroServiceImpl extends CRUDImpl<Pasajero, Integer> implements 
             throw new IllegalArgumentException("El viaje no puede ser nulo");
         }
 
-        // 1. Calcula importe según origen/destino
-        double importe = calcularImportePorRuta(
+        // 2) Calculo el importe según tipo de pasajero y tipo de pago
+        double importe = calcularImportePorPago(
                 pasajero.getTipo(),
-                viaje.getOrigen(),
-                viaje.getDestino()
+                pasajero.getTipoPago()
         );
+
 
         // 2. Asigna importe y folio
         pasajero.setImporte(importe);
@@ -74,29 +75,13 @@ public class PasajeroServiceImpl extends CRUDImpl<Pasajero, Integer> implements 
     }
 
 
-    private double calcularImportePorRuta(
-            TipoPasajero tipo,
-            String origen,
-            String destino
-    ) {
-        String o = origen.trim().toLowerCase();
-        String d = destino.trim().toLowerCase();
-
-        boolean esSC_YA = (o.equals("san cristobal de las casas") && d.equals("yajalon"))
-                || (o.equals("yajalon")                && d.equals("san cristobal de las casas"));
-
-        boolean esTU_YA = (o.equals("tuxtla gutierrez") && d.equals("yajalon"))
-                || (o.equals("yajalon") && d.equals("tuxtla gutierrez"));
-
-        if (esSC_YA) {
-            return tipo.getTarifaYajalonSanCristobal();
-        }
-        else if (esTU_YA) {
-            return tipo.getTarifaYajalonTuxtla();
-        }
-        throw new IllegalArgumentException(
-                String.format("Ruta no soportada: %s → %s", origen, destino)
-        );
+    private double calcularImportePorPago(TipoPasajero tipo, TipoPago pago) {
+        return switch (pago) {
+            case SCLC      -> tipo.getTarifaYajalonSanCristobal();
+            case DESTINO,
+                 PAGADO   -> tipo.getTarifaYajalonTuxtla();
+            default -> throw new IllegalArgumentException("TipoPago no soportado: " + pago);
+        };
     }
 
 
