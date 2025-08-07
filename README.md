@@ -271,9 +271,7 @@ server:
 
 Solo se permiten estas rutas (insensible a mayúsculas/minúsculas):
 
-* **San Cristobal de las Casas** ↔ **Yajalon**
 * **Tuxtla Gutierrez** ↔ **Yajalon**
-
 
 
 **Obtener Viaje** (`GET /viajes/{idViaje}`)
