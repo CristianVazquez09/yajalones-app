@@ -32,5 +32,5 @@ public class ViajeRequestDTO {
     private LocalDateTime fechaSalida;
 
     @NotNull(message = "La unidad es obligatoria", groups = {OnCreate.class, OnUpdate.class})
-    private UnidadDTO unidad;
+    private Integer idUnidad;
 }

@@ -38,5 +38,5 @@ public class PasajeroRequestDTO {
     private TipoPago tipoPago;
 
     @NotNull(message = "Debes indicar el viaje", groups = {OnCreate.class, OnUpdate.class})
-    private ViajeRequestDTO viaje;
+    private Integer idViaje;
 }

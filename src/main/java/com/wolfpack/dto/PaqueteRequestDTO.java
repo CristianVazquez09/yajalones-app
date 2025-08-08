@@ -39,5 +39,5 @@ public class PaqueteRequestDTO {
     private Boolean estado;
 
     @NotNull(message = "El viaje es obligatorio", groups = {OnCreate.class, OnUpdate.class})
-    private ViajeRequestDTO viaje;
+    private Integer idViaje;
 }
