@@ -152,9 +152,7 @@ server:
   "apellido": "Pérez",
   "telefono": "1234567890",
   "activo": true,
-  "unidad": {
-    "idUnidad": 1
-  }
+  "idUnidad": 1
 }
 ```
 
@@ -200,9 +198,7 @@ server:
   "contenido": "Documentos",
   "porCobrar": false,
   "estado": true,
-  "viaje": {
-    "idViaje": 1
-  }
+  "idViaje": 1
 }
 ```
 
@@ -228,10 +224,8 @@ server:
   "apellido": "López",
   "tipo": "ADULTO",
   "asiento": 5,
-  "tipoPago": "DESTINO",
-  "viaje": {
-    "idViaje": 1
-  }
+  "tipoPago": "DESTINO", 
+   "idViaje": 1
 }
 ```
 
