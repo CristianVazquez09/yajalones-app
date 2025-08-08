@@ -4,10 +4,13 @@ import com.wolfpack.dto.PasajeroRequestDTO;
 import com.wolfpack.dto.PasajeroResponseDTO;
 import com.wolfpack.model.Pasajero;
 import com.wolfpack.service.IPasajeroService;
+import com.wolfpack.util.OnCreate;
+import com.wolfpack.util.OnUpdate;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -38,7 +41,7 @@ public class PasajeroController {
     }
 
     @PostMapping
-    public ResponseEntity<Void> guardar(@Valid @RequestBody PasajeroRequestDTO dto) throws Exception{
+    public ResponseEntity<Void> guardar(@Validated(OnCreate.class) @RequestBody PasajeroRequestDTO dto) throws Exception{
         Pasajero obj = service.guardarPasajero(convertToEntityRequest(dto));
 
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(obj.getIdPasajero()).toUri();
@@ -47,7 +50,7 @@ public class PasajeroController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<PasajeroResponseDTO> actualizar(@Valid @PathVariable("id") Integer id, @RequestBody PasajeroRequestDTO dto) throws Exception{
+    public ResponseEntity<PasajeroResponseDTO> actualizar(@Validated(OnUpdate.class) @PathVariable("id") Integer id, @RequestBody PasajeroRequestDTO dto) throws Exception{
         dto.setIdPasajero(id);
         Pasajero obj = service.actualizarPasajero(id, convertToEntityRequest(dto));
 

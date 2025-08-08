@@ -42,7 +42,7 @@ public class Paquete {
     @Column(nullable = false)
     private boolean estado;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne()
     @JoinColumn(name = "id_viaje", foreignKey = @ForeignKey(name = "FK_PAQUETERIA_VIAJE"))
     private Viaje viaje;
 }

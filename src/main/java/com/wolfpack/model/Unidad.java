@@ -27,7 +27,7 @@ public class Unidad {
     @Column(nullable = false)
     private boolean activo;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, optional = false, orphanRemoval = true)
-    @JoinColumn(name = "id_turno", unique = true, nullable = false)
+    @ManyToOne()
+    @JoinColumn(name = "id_turno", nullable = false, foreignKey = @ForeignKey(name = "FK_UNIDAD_TURNO"))
     private Turno turno;
 }

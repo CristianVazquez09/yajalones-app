@@ -44,7 +44,7 @@ public class Pasajero {
     @Column(nullable = false)
     private TipoPago tipoPago;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne()
     @JoinColumn(name = "id_viaje", nullable = false, foreignKey = @ForeignKey(name = "FK_PASAJERO_VIAJE"))
     private Viaje viaje;
 

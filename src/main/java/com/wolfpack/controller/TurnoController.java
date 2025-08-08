@@ -3,10 +3,13 @@ package com.wolfpack.controller;
 import com.wolfpack.dto.TurnoDTO;
 import com.wolfpack.model.Turno;
 import com.wolfpack.service.ITurnoService;
+import com.wolfpack.util.OnCreate;
+import com.wolfpack.util.OnUpdate;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -40,7 +43,7 @@ public class TurnoController {
 
 
     @PostMapping
-    public ResponseEntity<Void> guardar(@Valid @RequestBody TurnoDTO dto) throws Exception{
+    public ResponseEntity<Void> guardar(@Validated(OnCreate.class) @RequestBody TurnoDTO dto) throws Exception{
         Turno obj = service.guardar(convertToEntity(dto));
 
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(obj.getIdTurno()).toUri();
@@ -49,7 +52,7 @@ public class TurnoController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<TurnoDTO> actualizar(@Valid @PathVariable("id") Integer id, @RequestBody TurnoDTO dto) throws Exception{
+    public ResponseEntity<TurnoDTO> actualizar(@Validated(OnUpdate.class) @PathVariable("id") Integer id, @RequestBody TurnoDTO dto) throws Exception{
         dto.setIdTurno(id);
         Turno obj = service.actualizar(id, convertToEntity(dto));
 

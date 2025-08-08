@@ -7,10 +7,13 @@ import com.wolfpack.dto.PasajeroResponseDTO;
 import com.wolfpack.model.Paquete;
 import com.wolfpack.model.Pasajero;
 import com.wolfpack.service.IPaqueteService;
+import com.wolfpack.util.OnCreate;
+import com.wolfpack.util.OnUpdate;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -42,7 +45,7 @@ public class PaqueteController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<PaqueteResponseDTO> actualizar(@Valid @PathVariable("id") Integer id, @RequestBody PaqueteRequestDTO dto) throws Exception{
+    public ResponseEntity<PaqueteResponseDTO> actualizar(@Validated(OnUpdate.class) @PathVariable("id") Integer id, @RequestBody PaqueteRequestDTO dto) throws Exception{
         dto.setIdPaquete(id);
         Paquete obj = service.actualizarPaquete(id, convertToEntityRequest(dto));
 
@@ -50,7 +53,7 @@ public class PaqueteController {
     }
 
     @PostMapping
-    public ResponseEntity<Void> guardar(@Valid @RequestBody PaqueteRequestDTO dto) throws Exception{
+    public ResponseEntity<Void> guardar(@Validated(OnCreate.class) @RequestBody PaqueteRequestDTO dto) throws Exception{
         Paquete obj = service.guardarPaquete(convertToEntityRequest(dto));
 
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(obj.getIdPaquete()).toUri();

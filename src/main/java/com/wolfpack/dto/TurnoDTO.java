@@ -1,19 +1,26 @@
 package com.wolfpack.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import com.wolfpack.util.OnCreate;
+import com.wolfpack.util.OnUpdate;
+import jakarta.validation.constraints.*;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.*;
 
 import java.sql.Time;
 
-@AllArgsConstructor
-@NoArgsConstructor
 @Data
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@NoArgsConstructor
+@AllArgsConstructor
 public class TurnoDTO {
 
+    @Null(message = "No especifiques idTurno al crear", groups = OnCreate.class)
+    @Null(message = "El id dek Turno debe ir la URL", groups = OnUpdate.class)
     private Integer idTurno;
+
+    @NotNull(message = "El horario es obligatorio", groups = {OnCreate.class, OnUpdate.class})
     private Time horario;
-    private boolean activo;
+
+    @NotNull(message = "El estado activo es obligatorio", groups = {OnCreate.class, OnUpdate.class})
+    private Boolean activo;
+
 }

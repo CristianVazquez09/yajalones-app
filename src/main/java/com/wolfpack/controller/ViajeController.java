@@ -4,10 +4,13 @@ import com.wolfpack.dto.ViajeRequestDTO;
 import com.wolfpack.dto.ViajeResponseDTO;
 import com.wolfpack.model.Viaje;
 import com.wolfpack.service.IViajeService;
+import com.wolfpack.util.OnCreate;
+import com.wolfpack.util.OnUpdate;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -38,7 +41,7 @@ public class ViajeController {
     }
 
     @PostMapping
-    public ResponseEntity<Void> guardarViaje (@Valid @RequestBody ViajeRequestDTO dto) throws Exception{
+    public ResponseEntity<Void> guardarViaje (@Validated(OnCreate.class) @RequestBody ViajeRequestDTO dto) throws Exception{
         Viaje obj = service.guardarViaje(convertToEntityRequest(dto));
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(obj.getIdViaje()).toUri();
 
