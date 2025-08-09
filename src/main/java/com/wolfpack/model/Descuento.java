@@ -24,6 +24,6 @@ public class Descuento {
     @Column(length = 200)
     private String descripcion;
 
-    @Column(nullable = false, columnDefinition = "decimal(8,2)")
+    @Column(nullable = false, columnDefinition = "numeric(8,2)")
     private double importe;
 }

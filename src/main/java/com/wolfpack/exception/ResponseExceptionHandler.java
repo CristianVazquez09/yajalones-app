@@ -4,6 +4,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -29,6 +31,14 @@ public class ResponseExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(err, HttpStatus.NOT_FOUND);
     }
 
+
+
+    @ExceptionHandler(UsernameNotFoundException.class)
+    public ResponseEntity<CustomErrorResponse> usernameNotFoundException(UsernameNotFoundException ex, WebRequest request){
+        CustomErrorResponse err = new CustomErrorResponse(LocalDateTime.now(), ex.getMessage(), request.getDescription(false));
+
+        return new ResponseEntity<>(err, HttpStatus.NOT_FOUND);
+    }
 
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
