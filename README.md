@@ -10,6 +10,7 @@ Servidor para el sistema de transporte de la empresa "Los Yajalones"
 * [Instalación](#instalación)
 * [Configuración](#configuración)
 * [Estructura de Carpetas](#estructura-de-carpetas)
+* [Autenticación e Inicio de Sesión (JWT)](#autenticación-e-inicio-de-sesión-jwt)
 * [Endpoints Principales](#endpoints-principales)
 * [Enumeraciones](#enumeraciones)
 * [Contribuciones](#contribuciones)
@@ -62,16 +63,19 @@ Ubicación: `src/main/resources/application-dev.yml`
 ```yaml
 spring:
   datasource:
-    url: [URL_BD]
-    username: [USUARIO_BD]
-    password: [CONTRASEÑA_BD]
+    url: [DATABASE_URL]
+    username: [DATABASE_USERNAME]
+    password: [DATABASE_PASSWORD]
 
 server:
   port: 8081
+jwt:
+   secret: ${SECRET_KEY}
 ```
 
 > **Nota**:
 > Ajusta `url`, `username` y `password` según tus credenciales locales.
+> Ajustar el `secret key` con una cadena que pese 256'
 
 ## Estructura de Carpetas
 
@@ -83,9 +87,46 @@ server:
 │   │       ├── application.yml        # configuración general
 │   │       └── application-dev.yml    # configuración local
 │   └── test
-├── pom.xml (o build.gradle)
+├── pom.xml 
 └── README.md
 ```
+
+## Autenticación e Inicio de Sesión (JWT)
+
+Este backend usa **JSON Web Tokens (JWT)** para autenticar y autorizar el acceso a endpoints protegidos. El login genera un token con **vigencia de 24 hora**. Debes enviarlo en el header `Authorization` como `Bearer <token>`.
+
+### Endpoint de Login
+
+| Método | Ruta            | Descripción                     |
+| ------ | --------------- | ------------------------------- |
+| POST   | `/inicioSesion` | Autentica y devuelve un **JWT** |
+
+**Credenciales de prueba**
+
+```json
+{
+  "nombreUsuario": "Yajalon",
+  "password": "123"
+}
+```
+
+**Respuesta (200 OK)**
+
+```json
+{
+  "access_token": "eyJhbGciOiJIUzUxMiJ9.eyJyb2xlIjoiVFJBQkFKQURPUiIsInN1YiI6IllhamFsb24iLCJpYXQiOjE3NTQ3NzIzOTksImV4cCI6MTc1NDg1ODc5OX0.AE8jP1FdsQrzPfotdpgijepCGCksyGDMxsMG_NblwVs-UGCe0F1MA6oT3Nyp-MESsMW26kRx-TnwuRTwecqGTw"
+}
+```
+
+> La API **solo devuelve el token** en la propiedad `access_token`. Expira **24 horas** después de su emisión.
+
+**Uso del token**
+
+```
+Authorization: Bearer <access_token>
+```
+
+---
 
 ## Endpoints Principales
 
@@ -152,7 +193,9 @@ server:
   "apellido": "Pérez",
   "telefono": "1234567890",
   "activo": true,
-  "idUnidad": 1
+  "unidad": {
+     "idUnidad": 1
+  }
 }
 ```
 
@@ -224,8 +267,8 @@ server:
   "apellido": "López",
   "tipo": "ADULTO",
   "asiento": 5,
-  "tipoPago": "DESTINO", 
-   "idViaje": 1
+  "tipoPago": "DESTINO",
+  "idViaje": 1
 }
 ```
 
@@ -266,7 +309,6 @@ server:
 Solo se permiten estas rutas (insensible a mayúsculas/minúsculas):
 
 * **Tuxtla Gutierrez** ↔ **Yajalon**
-
 
 **Obtener Viaje** (`GET /viajes/{idViaje}`)
 
@@ -337,5 +379,3 @@ public enum TipoPasajero {
 ## Licencia
 
 Este proyecto está bajo la [MIT License](LICENSE).
-
-hermano
