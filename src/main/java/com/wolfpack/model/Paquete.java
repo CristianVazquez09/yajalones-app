@@ -27,7 +27,7 @@ public class Paquete {
     @Column(nullable = false, length = 100)
     private String destinatario;
 
-    @Column(nullable = false, columnDefinition = "decimal(6,2)")
+    @Column(nullable = false,columnDefinition = "numeric(8,2)")
     private double importe;
 
     @Column(nullable = false, columnDefinition = "TEXT")

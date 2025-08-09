@@ -37,7 +37,7 @@ public class Pasajero {
     @Column(nullable = false, length = 9)
     private String folio;
 
-    @Column(nullable = false, columnDefinition = "decimal(6,2)")
+    @Column(nullable = false,columnDefinition = "numeric(8,2)")
     private double importe;
 
     @Enumerated(EnumType.STRING)

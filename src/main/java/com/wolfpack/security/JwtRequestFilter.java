@@ -46,7 +46,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
         boolean exist = usuarioRepo.existsUsuarioByNombreUsuario(username);
 
-        if(username != null && exist) {
+        if(username != null ) {
             UserDetails userDetails = jwtUserDetailsService.loadUserByUsername(username);
 
             if(jwtTokenUtil.validateToken(jwtToken, userDetails)) {
