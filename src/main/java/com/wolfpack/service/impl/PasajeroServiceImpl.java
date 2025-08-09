@@ -58,10 +58,20 @@ public class PasajeroServiceImpl extends CRUDImpl<Pasajero, Integer> implements 
     public Pasajero actualizarPasajero(Integer id, Pasajero pasajero) throws Exception {
         Pasajero pasajeroEncontrado = repo.findById(id).orElseThrow(() -> new ModelNotFoundException("ID NOT FOUND: " + id));
 
-        pasajero.setFolio(pasajeroEncontrado.getFolio());
-        pasajero.setImporte(pasajeroEncontrado.getImporte());
 
-        return repo.save(pasajero);
+        double importe = calcularImportePorPago(
+                pasajero.getTipo(),
+                pasajero.getTipoPago()
+        );
+
+        pasajero.setFolio(pasajeroEncontrado.getFolio());
+        pasajero.setImporte(importe);
+
+        Pasajero pasajeroActualizado = repo.save(pasajero);
+
+        viajeService.actualizarCostosViaje(pasajeroActualizado.getViaje().getIdViaje());
+
+        return pasajeroActualizado;
     }
 
     @Override

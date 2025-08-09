@@ -1,9 +1,6 @@
 package com.wolfpack.controller;
 
-import com.wolfpack.dto.PaqueteRequestDTO;
-import com.wolfpack.dto.PaqueteResponseDTO;
-import com.wolfpack.dto.PasajeroRequestDTO;
-import com.wolfpack.dto.PasajeroResponseDTO;
+import com.wolfpack.dto.*;
 import com.wolfpack.model.Paquete;
 import com.wolfpack.model.Pasajero;
 import com.wolfpack.service.IPaqueteService;
@@ -37,6 +34,13 @@ public class PaqueteController {
         return ResponseEntity.ok(list);
     }
 
+    @GetMapping("/pendientes")
+    public ResponseEntity<List<PaqueteResponseDTO>> buscarPaquetesPendientes() throws Exception{
+        List<PaqueteResponseDTO> list = service.obtenerPaquetesPendientes().stream().map(this::convertToDtoResponse).toList();
+
+        return ResponseEntity.ok(list);
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<PaqueteResponseDTO> buscarPorId(@PathVariable("id") Integer id) throws Exception {
         Paquete obj = service.buscarPorId(id);
@@ -45,7 +49,7 @@ public class PaqueteController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<PaqueteResponseDTO> actualizar(@Validated(OnUpdate.class) @PathVariable("id") Integer id, @RequestBody PaqueteRequestDTO dto) throws Exception{
+    public ResponseEntity<PaqueteResponseDTO> actualizar(@PathVariable("id") Integer id,@Validated(OnUpdate.class) @RequestBody PaqueteRequestDTO dto) throws Exception{
         dto.setIdPaquete(id);
         Paquete obj = service.actualizarPaquete(id, convertToEntityRequest(dto));
 
@@ -59,6 +63,22 @@ public class PaqueteController {
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(obj.getIdPaquete()).toUri();
 
         return ResponseEntity.created(location).build();
+    }
+
+    @PostMapping("/pendiente")
+    public ResponseEntity<Void> guardarPaquetePendiente(@Validated(OnCreate.class) @RequestBody PaquetePendienteRequestDTO dto) throws Exception{
+        Paquete obj = service.guardarPaquetePendiente(modelMapper.map(dto, Paquete.class));
+
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(obj.getIdPaquete()).toUri();
+
+        return ResponseEntity.created(location).build();
+    }
+
+    @PutMapping("/confirmar/{idPaquete}/{idViaje}")
+    public ResponseEntity<PaqueteResponseDTO> confirmarPaquete( @PathVariable("idPaquete") Integer idPaquete,  @PathVariable("idViaje") Integer idViaje) throws Exception{
+        Paquete obj = service.confirmarPaquete(idPaquete, idViaje);
+
+        return ResponseEntity.ok(convertToDtoResponse(obj));
     }
 
     @DeleteMapping("/{id}")

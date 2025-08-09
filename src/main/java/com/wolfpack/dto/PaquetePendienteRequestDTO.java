@@ -2,15 +2,17 @@ package com.wolfpack.dto;
 
 import com.wolfpack.util.OnCreate;
 import com.wolfpack.util.OnUpdate;
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-public class PaqueteRequestDTO {
+public class PaquetePendienteRequestDTO {
 
     @EqualsAndHashCode.Include
     @Null(message = "No envíes idPaquete al crear", groups = OnCreate.class)
@@ -35,6 +37,4 @@ public class PaqueteRequestDTO {
     @NotNull(message = "Debes indicar si es por cobrar", groups = {OnCreate.class, OnUpdate.class})
     private Boolean porCobrar;
 
-    @NotNull(message = "El viaje es obligatorio", groups = {OnCreate.class, OnUpdate.class})
-    private Integer idViaje;
 }
