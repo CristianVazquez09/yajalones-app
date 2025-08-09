@@ -31,22 +31,22 @@ public class Viaje {
     @Column(nullable = false)
     private LocalDateTime fechaSalida;
 
-    @Column(nullable = false, columnDefinition = "decimal(6,2)")
+    @Column(nullable = false, columnDefinition = "numeric(6,2)")
     private double totalPasajeros;
 
-    @Column(nullable = false, columnDefinition = "decimal(6,2)")
+    @Column(nullable = false, columnDefinition = "numeric(6,2)")
     private double totalPaqueteria;
 
-    @Column(nullable = false, columnDefinition = "decimal(6,2)")
+    @Column(nullable = false, columnDefinition = "numeric(6,2)")
     private double comision;
 
-    @Column(nullable = false, columnDefinition = "decimal(6,2)")
+    @Column(nullable = false, columnDefinition = "numeric(6,2)")
     private double totalPorCobrar;
 
-    @Column(nullable = false, columnDefinition = "decimal(6,2)")
+    @Column(nullable = false, columnDefinition = "numeric(6,2)")
     private double totalPagadoYajalon;
 
-    @Column(nullable = false, columnDefinition = "decimal(6,2)")
+    @Column(nullable = false, columnDefinition = "numeric(6,2)")
     private double totalPagadoSclc;
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
@@ -57,7 +57,7 @@ public class Viaje {
     @JoinColumn(name = "id_unidad", nullable = false)
     private Unidad unidad;
 
-    @Column(nullable = false, columnDefinition = "decimal(8,2)")
+    @Column(nullable = false, columnDefinition = "numeric(8,2)")
     private double totalViaje;
 
     @OneToMany(mappedBy = "viaje", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)

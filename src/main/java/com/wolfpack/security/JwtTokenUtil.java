@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 @Component
 public class JwtTokenUtil {
 
-    private final long JWT_TOKEN_VALIDITY = 5 * 60 * 60 * 1000; //5 horas;
+    private static final long JWT_TOKEN_VALIDITY = 24L * 60 * 60 * 1000; //24 horas;
 
     @Value("${jwt.secret}") //EL Expression Language
     private String secret;
@@ -37,6 +37,7 @@ public class JwtTokenUtil {
                 .claims(claims)
                 .subject(username)
                 .issuedAt(new Date(System.currentTimeMillis()))
+                .expiration(new Date(System.currentTimeMillis() + JWT_TOKEN_VALIDITY))
                 .signWith(getSigningKey())
                 .compact();
     }
