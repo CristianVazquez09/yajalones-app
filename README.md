@@ -62,20 +62,21 @@ Ubicación: `src/main/resources/application-dev.yml`
 
 ```yaml
 spring:
-  datasource:
-    url: [DATABASE_URL]
-    username: [DATABASE_USERNAME]
-    password: [DATABASE_PASSWORD]
+   datasource:
+      url: [DATABASE_URL]
+      username: [DATABASE_USERNAME]
+      password: [DATABASE_PASSWORD]
 
 server:
-  port: 8081
+   port: 8081
+
 jwt:
    secret: ${SECRET_KEY}
 ```
 
-> **Nota**:
-> Ajusta `url`, `username` y `password` según tus credenciales locales.
-> Ajustar el `secret key` con una cadena que pese 256'
+> **Notas**
+> • Ajusta `url`, `username` y `password` según tus credenciales locales.
+> • Define `jwt.secret` con una clave segura (p. ej., 256 bits).
 
 ## Estructura de Carpetas
 
@@ -93,7 +94,7 @@ jwt:
 
 ## Autenticación e Inicio de Sesión (JWT)
 
-Este backend usa **JSON Web Tokens (JWT)** para autenticar y autorizar el acceso a endpoints protegidos. El login genera un token con **vigencia de 24 hora**. Debes enviarlo en el header `Authorization` como `Bearer <token>`.
+Este backend usa **JSON Web Tokens (JWT)** para autenticar y autorizar el acceso a endpoints protegidos. El login genera un token con **vigencia de 24 horas**. Debes enviarlo en el header `Authorization` como `Bearer <token>`.
 
 ### Endpoint de Login
 
@@ -118,13 +119,8 @@ Este backend usa **JSON Web Tokens (JWT)** para autenticar y autorizar el acceso
 }
 ```
 
-> La API **solo devuelve el token** en la propiedad `access_token`. Expira **24 horas** después de su emisión.
-
-**Uso del token**
-
-```
-Authorization: Bearer <access_token>
-```
+> La API **solo devuelve el token** en `access_token`. Expira **24 horas** después de su emisión.
+> **Uso**: `Authorization: Bearer <access_token>`
 
 ---
 
@@ -168,9 +164,7 @@ Authorization: Bearer <access_token>
   "nombre": "Unidad C",
   "descripcion": "Ruta de prueba",
   "activo": true,
-  "turno": {
-    "idTurno": 1
-  }
+  "turno": { "idTurno": 1 }
 }
 ```
 
@@ -193,9 +187,7 @@ Authorization: Bearer <access_token>
   "apellido": "Pérez",
   "telefono": "1234567890",
   "activo": true,
-  "unidad": {
-     "idUnidad": 1
-  }
+  "unidad": { "idUnidad": 1 }
 }
 ```
 
@@ -223,13 +215,16 @@ Authorization: Bearer <access_token>
 
 ### Paquetes
 
-| Método | Ruta             | Descripción                     |
-| ------ | ---------------- | ------------------------------- |
-| GET    | `/paquetes`      | Listar todos los paquetes       |
-| GET    | `/paquetes/{id}` | Obtener un paquete por su ID    |
-| POST   | `/paquetes`      | Crear un nuevo paquete          |
-| PUT    | `/paquetes/{id}` | Actualizar un paquete existente |
-| DELETE | `/paquetes/{id}` | Eliminar un paquete (por ID)    |
+| Método | Ruta                                        | Descripción                                      |
+| ------ | ------------------------------------------- | ------------------------------------------------ |
+| GET    | `/paquetes`                                 | Listar todos los paquetes                        |
+| GET    | `/paquetes/{id}`                            | Obtener un paquete por su ID                     |
+| POST   | `/paquetes`                                 | Crear un nuevo paquete (asociado a un viaje)     |
+| PUT    | `/paquetes/{id}`                            | Actualizar un paquete existente                  |
+| DELETE | `/paquetes/{id}`                            | Eliminar un paquete (por ID)                     |
+| POST   | `/paquetes/pendiente`                       | **Crear paquete pendiente** (sin viaje asignado) |
+| GET    | `/paquetes/pendientes`                      | **Listar paquetes pendientes**                   |
+| PUT    | `/paquetes/confirmar/{idPaquete}/{idViaje}` | **Confirmar** (asignar pendiente a un viaje)     |
 
 **Crear Paquete** (`POST /paquetes`)
 
@@ -240,14 +235,45 @@ Authorization: Bearer <access_token>
   "importe": 250.00,
   "contenido": "Documentos",
   "porCobrar": false,
-  "estado": true,
   "idViaje": 1
 }
 ```
 
-> Al agregar o eliminar un paquete, el servidor actualiza automáticamente los totales del viaje.
+**Crear Paquete Pendiente** (`POST /paquetes/pendiente`)
 
----
+```json
+{
+  "remitente": "Empresa A",
+  "destinatario": "Cliente B",
+  "importe": 250.00,
+  "contenido": "Documentos"
+}
+```
+
+**Confirmar Paquete Pendiente** (`PUT /paquetes/confirmar/{idPaquete}/{idViaje}`)
+> Solo se envían los id del paquete y del viaje por confirmar 
+
+**Listar Paquetes Pendientes** (`GET /paquetes/pendientes`) – ejemplo
+
+```json
+[
+  {
+    "idPaquete": 7,
+    "remitente": "Empresa A",
+    "destinatario": "Cliente B",
+    "importe": 250.00,
+    "contenido": "Documentos",
+    "porCobrar": true,
+    "estado": false
+  }
+]
+```
+
+> **Semántica de `estado`**
+> `false` → **pendiente** (sin viaje asignado).
+> `true`  → **confirmado** (ya no está pendiente; asignado a un viaje).
+> Al **agregar, eliminar o confirmar** paquetes, el servidor actualiza automáticamente los totales del viaje.
+
 
 ### Pasajeros
 
@@ -298,9 +324,7 @@ Authorization: Bearer <access_token>
   "origen": "Yajalón",
   "destino": "Tuxtla Gutiérrez",
   "fechaSalida": "2025-07-18T07:00:00",
-  "unidad": {
-    "idUnidad": 1
-  }
+  "unidad": { "idUnidad": 1 }
 }
 ```
 
@@ -325,9 +349,9 @@ Solo se permiten estas rutas (insensible a mayúsculas/minúsculas):
   "totalPagadoYajalon": 350.00,
   "totalPagadoSclc": 0.00,
   "descuento": null,
-  "unidad": { … },
-  "pasajeros": [ … ],
-  "paquetes": [ … ],
+  "unidad": { "idUnidad": 1, "nombre": "U1", "descripcion": "Unidad en buen estado", "activo": true },
+  "pasajeros": [ /* ... */ ],
+  "paquetes":  [ /* ... */ ],
   "totalViaje": 600.75
 }
 ```
@@ -350,12 +374,12 @@ public enum TipoPasajero {
 
     TipoPasajero(double tarifaYajalonSanCristobal, double tarifaYajalonTuxtla) {
         this.tarifaYajalonSanCristobal = tarifaYajalonSanCristobal;
-        this.tarifaYajalonTuxtla   = tarifaYajalonTuxtla;
+        this.tarifaYajalonTuxtla = tarifaYajalonTuxtla;
     }
 }
 ```
 
-*El importe de cada pasajero se calcula automáticamente según el `TipoPasajero` y la ruta seleccionada.*
+*El importe por pasajero se calcula automáticamente según el `TipoPasajero` y la ruta seleccionada.*
 
 ## Contribuciones
 
