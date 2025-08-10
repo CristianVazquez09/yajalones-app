@@ -1,14 +1,16 @@
 package com.wolfpack.controller;
 
-import com.wolfpack.dto.ChoferDTO;
-import com.wolfpack.dto.PasajeroDTO;
-import com.wolfpack.model.Chofer;
+import com.wolfpack.dto.PasajeroRequestDTO;
+import com.wolfpack.dto.PasajeroResponseDTO;
 import com.wolfpack.model.Pasajero;
 import com.wolfpack.service.IPasajeroService;
+import com.wolfpack.util.OnCreate;
+import com.wolfpack.util.OnUpdate;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -25,22 +27,22 @@ public class PasajeroController {
     private final ModelMapper modelMapper;
 
     @GetMapping
-    public ResponseEntity<List<PasajeroDTO>> buscarTodos() throws Exception{
-        List<PasajeroDTO> list = service.buscarTodos().stream().map(this::convertToDto).toList();
+    public ResponseEntity<List<PasajeroResponseDTO>> buscarTodos() throws Exception{
+        List<PasajeroResponseDTO> list = service.buscarTodos().stream().map(this::convertToDtoResponse).toList();
 
         return ResponseEntity.ok(list);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<PasajeroDTO> buscarPorId(@PathVariable("id") Integer id) throws Exception {
+    public ResponseEntity<PasajeroResponseDTO> buscarPorId(@PathVariable("id") Integer id) throws Exception {
         Pasajero obj = service.buscarPorId(id);
 
-        return ResponseEntity.ok(convertToDto(obj));
+        return ResponseEntity.ok(convertToDtoResponse(obj));
     }
 
     @PostMapping
-    public ResponseEntity<Void> guardar(@Valid @RequestBody PasajeroDTO dto) throws Exception{
-        Pasajero obj = service.guardarPasajero(convertToEntity(dto));
+    public ResponseEntity<Void> guardar(@Validated(OnCreate.class) @RequestBody PasajeroRequestDTO dto) throws Exception{
+        Pasajero obj = service.guardarPasajero(convertToEntityRequest(dto));
 
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(obj.getIdPasajero()).toUri();
 
@@ -48,18 +50,24 @@ public class PasajeroController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<PasajeroDTO> actualizar(@Valid @PathVariable("id") Integer id, @RequestBody PasajeroDTO dto) throws Exception{
+    public ResponseEntity<PasajeroResponseDTO> actualizar(@Validated(OnUpdate.class) @PathVariable("id") Integer id, @RequestBody PasajeroRequestDTO dto) throws Exception{
         dto.setIdPasajero(id);
-        Pasajero obj = service.actualizar(id, convertToEntity(dto));
+        Pasajero obj = service.actualizarPasajero(id, convertToEntityRequest(dto));
 
-        return ResponseEntity.ok(convertToDto(obj));
+        return ResponseEntity.ok(convertToDtoResponse(obj));
     }
 
-    private PasajeroDTO convertToDto(Pasajero obj){
-        return modelMapper.map(obj, PasajeroDTO.class);
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> eliminar(@PathVariable("id") Integer id) throws Exception{
+        service.eliminarPasajero(id);
+        return ResponseEntity.noContent().build();
     }
 
-    private Pasajero convertToEntity(PasajeroDTO dto){
+    private PasajeroResponseDTO convertToDtoResponse(Pasajero obj){
+        return modelMapper.map(obj, PasajeroResponseDTO.class);
+    }
+
+    private Pasajero convertToEntityRequest(PasajeroRequestDTO dto){
         return modelMapper.map(dto, Pasajero.class);
     }
 

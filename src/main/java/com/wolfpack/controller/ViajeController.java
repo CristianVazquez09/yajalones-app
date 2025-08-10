@@ -1,13 +1,16 @@
 package com.wolfpack.controller;
 
-import com.wolfpack.dto.ViajeDTO;
+import com.wolfpack.dto.ViajeRequestDTO;
 import com.wolfpack.dto.ViajeResponseDTO;
 import com.wolfpack.model.Viaje;
 import com.wolfpack.service.IViajeService;
+import com.wolfpack.util.OnCreate;
+import com.wolfpack.util.OnUpdate;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -38,19 +41,21 @@ public class ViajeController {
     }
 
     @PostMapping
-    public ResponseEntity<Void> guardarViaje (@Valid @RequestBody ViajeDTO dto) throws Exception{
+    public ResponseEntity<Void> guardarViaje (@Validated(OnCreate.class) @RequestBody ViajeRequestDTO dto) throws Exception{
         Viaje obj = service.guardarViaje(convertToEntityRequest(dto));
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(obj.getIdViaje()).toUri();
 
         return ResponseEntity.created(location).build();
     }
 
-
-    private ViajeDTO convertToDtoRequest(Viaje obj){
-        return modelMapper.map(obj, ViajeDTO.class);
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> eliminar(@PathVariable("id") Integer id) throws Exception{
+        service.eliminar(id);
+        return ResponseEntity.noContent().build();
     }
 
-    private Viaje convertToEntityRequest(ViajeDTO dto){
+
+    private Viaje convertToEntityRequest(ViajeRequestDTO dto){
         return modelMapper.map(dto, Viaje.class);
     }
 
@@ -58,9 +63,6 @@ public class ViajeController {
         return modelMapper.map(obj, ViajeResponseDTO.class);
     }
 
-    private Viaje convertToEntityResponse(ViajeResponseDTO dto){
-        return modelMapper.map(dto, Viaje.class);
-    }
 
 
 }

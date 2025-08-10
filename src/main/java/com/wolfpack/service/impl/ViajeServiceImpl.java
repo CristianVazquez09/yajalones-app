@@ -4,20 +4,18 @@ import com.wolfpack.model.Paquete;
 import com.wolfpack.model.Pasajero;
 import com.wolfpack.model.Viaje;
 import com.wolfpack.model.enums.TipoPago;
-import com.wolfpack.model.enums.TipoPasajero;
 import com.wolfpack.repo.IViajeRepo;
 import com.wolfpack.repo.IGenericRepo;
 import com.wolfpack.service.IViajeService;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -39,15 +37,14 @@ public class ViajeServiceImpl extends CRUDImpl<Viaje, Integer> implements IViaje
 
         double totalPaquetes = viaje.getTotalPaqueteria();
 
-        double ingresoTotal = totalPasajeros + totalPaquetes;
-        if (ingresoTotal <= COMISION) {
-            throw new IllegalArgumentException(
-                    String.format(
-                            "La suma de ingresos (%.2f + %.2f = %.2f) debe ser mayor que la comisión (%.2f)",
-                            totalPasajeros, totalPaquetes, ingresoTotal, COMISION
-                    )
-            );
+        double ingresoTotal = (totalPasajeros + totalPaquetes) - COMISION;
+
+        if(totalPasajeros == 0 && totalPaquetes == 0){
+            ingresoTotal = 0;
         }
+
+
+
         viaje.setTotalViaje(ingresoTotal);
 
         return repo.save(viaje);
@@ -68,13 +65,15 @@ public class ViajeServiceImpl extends CRUDImpl<Viaje, Integer> implements IViaje
         pasajeros.add(pasajero);
 
         double totalPasajeros = sumarImportes(pasajeros);
-        double totalPagoSCLC = sumarPorTipoPago(pasajeros, TipoPago.PAGAR_SCLC);
-        double totalPagoYajalon = sumarPorTipoPago(pasajeros, TipoPago.PAGAR_YAJALON);
+        double totalPagoSCLC = sumarPorTipoPago(pasajeros, TipoPago.SCLC);
+        double totalPagoYajalon = sumarPorTipoPago(pasajeros, TipoPago.DESTINO);
 
         viaje.setTotalPasajeros(totalPasajeros);
         viaje.setTotalPagadoSclc(totalPagoSCLC);
         viaje.setTotalPagadoYajalon(totalPagoYajalon);
         viaje.setPasajeros(pasajeros);
+
+
 
         guardarViaje(viaje);
 
@@ -101,6 +100,35 @@ public class ViajeServiceImpl extends CRUDImpl<Viaje, Integer> implements IViaje
 
         guardarViaje(viaje);
     }
+
+    @Override
+    public void actualizarCostosViaje(Integer idViaje) {
+        Viaje v = repo.findById(idViaje)
+                .orElseThrow(() -> new EntityNotFoundException("Viaje no encontrado: " + idViaje));
+
+        // Null-safety
+        List<Pasajero> pasajeros = Optional.ofNullable(v.getPasajeros())
+                .orElseGet(List::of);
+        List<Paquete>  paquetes   = Optional.ofNullable(v.getPaquetes())
+                .orElseGet(List::of);
+
+        double totalPasajeros   = sumarImportes(pasajeros);
+        double totalPaquetes    = sumarImportes(paquetes);
+        double totalPagoSCLC    = sumarPorTipoPago(pasajeros, TipoPago.SCLC);
+        double totalPagoYajalon = sumarPorTipoPago(pasajeros, TipoPago.DESTINO);
+        double totalPorCobrar   = sumarPaquetesPorCobrar(paquetes);
+
+        v.setTotalPasajeros(totalPasajeros);
+        v.setTotalPagadoSclc(totalPagoSCLC);
+        v.setTotalPagadoYajalon(totalPagoYajalon);
+        v.setTotalPaqueteria(totalPaquetes);
+        v.setTotalPorCobrar(totalPorCobrar);
+        v.setComision(COMISION);
+        v.setTotalViaje(totalPasajeros + totalPaquetes);
+
+        guardarViaje(v);
+    }
+
 
 
     private <T> double sumarImportes(List<T> items){

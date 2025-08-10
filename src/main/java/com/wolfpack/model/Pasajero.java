@@ -34,17 +34,17 @@ public class Pasajero {
     @Column(nullable = false)
     private int asiento;
 
-    @Column(nullable = false)
-    private UUID folio;
+    @Column(nullable = false, length = 9)
+    private String folio;
 
-    @Column(nullable = false, columnDefinition = "decimal(6,2)")
+    @Column(nullable = false,columnDefinition = "numeric(8,2)")
     private double importe;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private TipoPago tipoPago;
 
-    @ManyToOne
+    @ManyToOne()
     @JoinColumn(name = "id_viaje", nullable = false, foreignKey = @ForeignKey(name = "FK_PASAJERO_VIAJE"))
     private Viaje viaje;
 

@@ -1,12 +1,16 @@
 package com.wolfpack.service.impl;
 
+import com.wolfpack.exception.ModelNotFoundException;
 import com.wolfpack.model.Pasajero;
+import com.wolfpack.model.Viaje;
+import com.wolfpack.model.enums.TipoPago;
 import com.wolfpack.model.enums.TipoPasajero;
 import com.wolfpack.repo.IPasajeroRepo;
 import com.wolfpack.repo.IGenericRepo;
 import com.wolfpack.repo.IViajeRepo;
 import com.wolfpack.service.IPasajeroService;
 import com.wolfpack.service.IViajeService;
+import com.wolfpack.util.GeneradorFolio;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -24,21 +28,71 @@ public class PasajeroServiceImpl extends CRUDImpl<Pasajero, Integer> implements 
     }
 
     @Override
-    public Pasajero guardarPasajero(Pasajero pasajero) {
-        // Calcular el importe
-        double importe = pasajero.getTipo().getTarifaBase();
-        //Asignar el importe al pasajero
+    public Pasajero guardarPasajero(Pasajero pasajero) throws Exception {
+        Viaje viaje = viajeService.buscarPorId(pasajero.getViaje().getIdViaje());
+        if (viaje == null) {
+            throw new IllegalArgumentException("El viaje no puede ser nulo");
+        }
+
+        // 2) Calculo el importe según tipo de pasajero y tipo de pago
+        double importe = calcularImportePorPago(
+                pasajero.getTipo(),
+                pasajero.getTipoPago()
+        );
+
+
+        // 2. Asigna importe y folio
         pasajero.setImporte(importe);
-        pasajero.setFolio(UUID.randomUUID());
+        pasajero.setFolio(GeneradorFolio.generarFolio());
 
-        // Guardar el pasajero en bd
-        Pasajero pasajeroGuardado = repo.save(pasajero);
+        // 3. Persiste pasajero
+        Pasajero guardado = repo.save(pasajero);
 
-        // actualizar el viaje
-        viajeService.agregarPasajero(pasajero);
+        // 4. Asocia al viaje y actualiza totales
+        viajeService.agregarPasajero(guardado);
 
-
-        return pasajeroGuardado;
+        return guardado;
     }
+
+    @Override
+    public Pasajero actualizarPasajero(Integer id, Pasajero pasajero) throws Exception {
+        Pasajero pasajeroEncontrado = repo.findById(id).orElseThrow(() -> new ModelNotFoundException("ID NOT FOUND: " + id));
+
+
+        double importe = calcularImportePorPago(
+                pasajero.getTipo(),
+                pasajero.getTipoPago()
+        );
+
+        pasajero.setFolio(pasajeroEncontrado.getFolio());
+        pasajero.setImporte(importe);
+
+        Pasajero pasajeroActualizado = repo.save(pasajero);
+
+        viajeService.actualizarCostosViaje(pasajeroActualizado.getViaje().getIdViaje());
+
+        return pasajeroActualizado;
+    }
+
+    @Override
+    public void eliminarPasajero(Integer idPasajero) throws Exception {
+        Pasajero pasajero =  repo.findById(idPasajero).orElseThrow(() -> new ModelNotFoundException("ID NOT FOUND: " + idPasajero));
+        Integer idViaje = pasajero.getViaje().getIdViaje();
+        repo.deleteById(idPasajero);
+        viajeService.actualizarCostosViaje(idViaje);
+
+
+    }
+
+
+    private double calcularImportePorPago(TipoPasajero tipo, TipoPago pago) {
+        return switch (pago) {
+            case SCLC      -> tipo.getTarifaYajalonSanCristobal();
+            case DESTINO,
+                 PAGADO   -> tipo.getTarifaYajalonTuxtla();
+            default -> throw new IllegalArgumentException("TipoPago no soportado: " + pago);
+        };
+    }
+
 
 }

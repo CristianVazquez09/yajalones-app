@@ -3,10 +3,13 @@ package com.wolfpack.controller;
 import com.wolfpack.dto.UnidadDTO;
 import com.wolfpack.model.Unidad;
 import com.wolfpack.service.IUnidadService;
+import com.wolfpack.util.OnCreate;
+import com.wolfpack.util.OnUpdate;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -40,7 +43,7 @@ public class UnidadController {
 
 
     @PostMapping
-    public ResponseEntity<Void> guardar(@Valid @RequestBody UnidadDTO dto) throws Exception{
+    public ResponseEntity<Void> guardar(@Validated(OnCreate.class) @RequestBody UnidadDTO dto) throws Exception{
         Unidad obj = service.guardar(convertToEntity(dto));
 
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(obj.getIdUnidad()).toUri();
@@ -49,7 +52,7 @@ public class UnidadController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<UnidadDTO> actualizar(@Valid @PathVariable("id") Integer id, @RequestBody UnidadDTO dto) throws Exception{
+    public ResponseEntity<UnidadDTO> actualizar(@Validated(OnUpdate.class) @PathVariable("id") Integer id, @RequestBody UnidadDTO dto) throws Exception{
         dto.setIdUnidad(id);
         Unidad obj = service.actualizar(id, convertToEntity(dto));
 

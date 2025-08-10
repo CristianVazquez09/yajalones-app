@@ -1,5 +1,6 @@
 package com.wolfpack.dto;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.wolfpack.model.enums.TipoPago;
 import com.wolfpack.model.enums.TipoPasajero;
 import lombok.AllArgsConstructor;
@@ -13,7 +14,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-public class PasajeroDTO {
+public class PasajeroResponseDTO {
 
     @EqualsAndHashCode.Include
     private Integer idPasajero;
@@ -21,9 +22,11 @@ public class PasajeroDTO {
     private String nombre;
     private String apellido;
     private TipoPasajero tipo;
+    private double importe;
     private int asiento;
-    private UUID folio;
+    private String folio;
     private TipoPago tipoPago;
-    private ViajeDTO viaje;
+    @JsonBackReference
+    private ViajeResponseDTO viaje;
 
 }

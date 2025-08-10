@@ -3,10 +3,13 @@ package com.wolfpack.controller;
 import com.wolfpack.dto.ChoferDTO;
 import com.wolfpack.model.Chofer;
 import com.wolfpack.service.IChoferService;
+import com.wolfpack.util.OnCreate;
+import com.wolfpack.util.OnUpdate;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -40,7 +43,7 @@ public class ChoferController {
 
 
     @PostMapping
-    public ResponseEntity<Void> guardar(@Valid @RequestBody ChoferDTO dto) throws Exception{
+    public ResponseEntity<Void> guardar(@Validated(OnCreate.class) @RequestBody ChoferDTO dto) throws Exception{
         Chofer obj = service.guardar(convertToEntity(dto));
 
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(obj.getIdChofer()).toUri();
@@ -49,7 +52,7 @@ public class ChoferController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ChoferDTO> actualizar(@Valid @PathVariable("id") Integer id, @RequestBody ChoferDTO dto) throws Exception{
+    public ResponseEntity<ChoferDTO> actualizar(@Validated(OnUpdate.class) @PathVariable("id") Integer id, @RequestBody ChoferDTO dto) throws Exception{
         dto.setIdChofer(id);
         Chofer obj = service.actualizar(id, convertToEntity(dto));
 

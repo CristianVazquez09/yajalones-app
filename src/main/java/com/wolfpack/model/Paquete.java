@@ -27,14 +27,14 @@ public class Paquete {
     @Column(nullable = false, length = 100)
     private String destinatario;
 
-    @Column(nullable = false, columnDefinition = "decimal(6,2)")
+    @Column(nullable = false,columnDefinition = "numeric(8,2)")
     private double importe;
 
     @Column(nullable = false, columnDefinition = "TEXT")
     private String contenido;
 
-    @Column(nullable = false)
-    private UUID folio;
+    @Column(nullable = false, length = 9)
+    private String folio;
 
     @Column(nullable = false)
     private boolean porCobrar;
@@ -42,7 +42,7 @@ public class Paquete {
     @Column(nullable = false)
     private boolean estado;
 
-    @ManyToOne
-    @JoinColumn(name = "id_viaje", nullable = false, foreignKey = @ForeignKey(name = "FK_PAQUETERIA_VIAJE"))
+    @ManyToOne()
+    @JoinColumn(name = "id_viaje", foreignKey = @ForeignKey(name = "FK_PAQUETERIA_VIAJE"))
     private Viaje viaje;
 }
