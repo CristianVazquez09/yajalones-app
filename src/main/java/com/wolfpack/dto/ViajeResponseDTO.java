@@ -25,6 +25,7 @@ public class ViajeResponseDTO {
     private double totalPorCobrar;
     private double totalPagadoYajalon;
     private double totalPagadoSclc;
+    private double totalPagadoTuxtla;
     private DescuentoDTO descuento;
     private UnidadDTO unidad;
     @JsonManagedReference

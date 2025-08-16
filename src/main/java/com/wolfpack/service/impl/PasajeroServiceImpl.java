@@ -29,10 +29,10 @@ public class PasajeroServiceImpl extends CRUDImpl<Pasajero, Integer> implements 
 
     @Override
     public Pasajero guardarPasajero(Pasajero pasajero) throws Exception {
-        Viaje viaje = viajeService.buscarPorId(pasajero.getViaje().getIdViaje());
+        /*Viaje viaje = viajeService.buscarPorId(pasajero.getViaje().getIdViaje());
         if (viaje == null) {
             throw new IllegalArgumentException("El viaje no puede ser nulo");
-        }
+        }*/
 
         // 2) Calculo el importe según tipo de pasajero y tipo de pago
         double importe = calcularImportePorPago(

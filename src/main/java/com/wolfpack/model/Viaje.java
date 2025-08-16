@@ -49,6 +49,9 @@ public class Viaje {
     @Column(nullable = false, columnDefinition = "numeric(6,2)")
     private double totalPagadoSclc;
 
+    @Column(nullable = false, columnDefinition = "numeric(6,2)")
+    private double totalPagadoTuxtla;
+
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "id_descuento",unique = true)
     private Descuento descuento;
