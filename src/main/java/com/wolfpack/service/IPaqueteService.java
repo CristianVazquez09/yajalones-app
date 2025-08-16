@@ -12,6 +12,7 @@ public interface IPaqueteService extends ICRUD<Paquete, Integer> {
     Paquete guardarPaquetePendiente(Paquete paquete);
 
     Paquete confirmarPaquete(Integer idPaquete, Integer idViaje);
+    Paquete desconfirmarPaquete(Integer idPaquete, Integer idViaje);
     List<Paquete> obtenerPaquetesPendientes ();
 }
 

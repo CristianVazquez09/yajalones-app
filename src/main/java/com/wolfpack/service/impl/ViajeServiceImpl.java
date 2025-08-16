@@ -76,20 +76,21 @@ public class ViajeServiceImpl extends CRUDImpl<Viaje, Integer> implements IViaje
             case "TUXTLA->YAJALON" -> {
                 totalPagoYajalon = sumarPorTipoPago(pasajeros, TipoPago.DESTINO);
                 totalPagadoTuxtla = sumarPorTipoPago(pasajeros, TipoPago.PAGADO);
-                ingresoTotal = totalPasajeros - (totalPagoYajalon+ totalPagoSCLC);
+                ingresoTotal = totalPasajeros - (totalPagoYajalon + totalPagoSCLC);
 
             }
             case "YAJALON->TUXTLA" -> {
                 totalPagoYajalon = sumarPorTipoPago(pasajeros, TipoPago.PAGADO);
                 totalPagadoTuxtla = sumarPorTipoPago(pasajeros, TipoPago.DESTINO);
-                ingresoTotal = totalPasajeros - (totalPagadoTuxtla+ totalPagoSCLC);
+                ingresoTotal = totalPasajeros - (totalPagadoTuxtla + totalPagoSCLC);
             }
 
         }
 
         double totalPorCobrar   = sumarPaquetesPorCobrar(paquetes);
-        double totalPaquetes    = sumarImportes(paquetes) - totalPorCobrar;
-        ingresoTotal = (ingresoTotal + totalPaquetes) - COMISION;
+        double totalPaquetes    = sumarImportes(paquetes);
+        double totalPaqueteria = totalPaquetes - totalPorCobrar;
+        ingresoTotal = (ingresoTotal + totalPaqueteria) - COMISION;
 
         v.setTotalViaje(ingresoTotal);
         v.setTotalPasajeros(totalPasajeros);
@@ -100,6 +101,16 @@ public class ViajeServiceImpl extends CRUDImpl<Viaje, Integer> implements IViaje
         v.setTotalPagadoYajalon(totalPagoYajalon);
 
         repo.save(v);
+    }
+
+    @Override
+    public void darBajaPaquete(Paquete paquete, Integer idViaje) {
+        Viaje viaje = repo.findById(idViaje).orElseThrow(() -> new EntityNotFoundException("Viaje no encontrado: " + idViaje));
+        List<Paquete> lista = paquete.getViaje().getPaquetes();
+        lista.remove(paquete);
+        repo.save(viaje);
+        actualizarCostosViaje(idViaje);
+
     }
 
 

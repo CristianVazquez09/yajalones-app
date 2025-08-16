@@ -13,4 +13,6 @@ public interface IViajeService extends ICRUD<Viaje, Integer> {
     void agregarPaquetes(Paquete paquete);
 
     void actualizarCostosViaje(Integer idViaje);
+    void darBajaPaquete(Paquete paquete, Integer idViaje);
+
 }

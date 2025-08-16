@@ -83,6 +83,19 @@ public class PaqueteServiceImpl extends CRUDImpl<Paquete, Integer> implements IP
     }
 
     @Override
+    public Paquete desconfirmarPaquete(Integer idPaquete, Integer idViaje) {
+        Paquete paqueteEncontrado = repo.findById(idPaquete).orElseThrow(() -> new ModelNotFoundException("ID NOT FOUND: " + idPaquete));
+        Viaje viajeEncontrado = viajeRepo.findById(idViaje).orElseThrow(() -> new ModelNotFoundException("ID NOT FOUND: " + idViaje));
+
+        paqueteEncontrado.setEstado(false);
+
+        paqueteEncontrado.setViaje(viajeEncontrado);
+
+        viajeService.darBajaPaquete(paqueteEncontrado, idViaje);
+        return paqueteEncontrado;
+    }
+
+    @Override
     public List<Paquete> obtenerPaquetesPendientes() {
         return repo.findByEstadoIsFalse();
     }

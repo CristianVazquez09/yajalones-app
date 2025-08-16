@@ -72,11 +72,19 @@ public class PaqueteController {
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(obj.getIdPaquete()).toUri();
 
         return ResponseEntity.created(location).build();
-    }
+    } // 13 15
+
 
     @PutMapping("/confirmar/{idPaquete}/{idViaje}")
     public ResponseEntity<PaqueteResponseDTO> confirmarPaquete( @PathVariable("idPaquete") Integer idPaquete,  @PathVariable("idViaje") Integer idViaje) throws Exception{
         Paquete obj = service.confirmarPaquete(idPaquete, idViaje);
+
+        return ResponseEntity.ok(convertToDtoResponse(obj));
+    }
+
+    @PutMapping("/baja/{idPaquete}/{idViaje}")
+    public ResponseEntity<PaqueteResponseDTO> darBajaPaquete( @PathVariable("idPaquete") Integer idPaquete,  @PathVariable("idViaje") Integer idViaje) throws Exception{
+        Paquete obj = service.desconfirmarPaquete(idPaquete, idViaje);
 
         return ResponseEntity.ok(convertToDtoResponse(obj));
     }
