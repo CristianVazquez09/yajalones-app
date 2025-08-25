@@ -1,6 +1,5 @@
 package com.wolfpack.service.impl;
 
-import com.wolfpack.exception.ModelNotFoundException;
 import com.wolfpack.model.Paquete;
 import com.wolfpack.model.Paquete;
 import com.wolfpack.model.Paquete;
@@ -11,6 +10,7 @@ import com.wolfpack.repo.IViajeRepo;
 import com.wolfpack.service.IPaqueteService;
 import com.wolfpack.service.IViajeService;
 import com.wolfpack.util.GeneradorFolio;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -41,7 +41,7 @@ public class PaqueteServiceImpl extends CRUDImpl<Paquete, Integer> implements IP
 
     @Override
     public Paquete actualizarPaquete(Integer id, Paquete paquete) throws Exception {
-        Paquete paqueteEncontrado = repo.findById(id).orElseThrow(() -> new ModelNotFoundException("ID NOT FOUND: " + id));
+        Paquete paqueteEncontrado = repo.findById(id).orElseThrow(() -> new EntityNotFoundException("ID no encontrado: " + id));
 
         paquete.setFolio(paqueteEncontrado.getFolio());
         Paquete paqueteActualizado = repo.save(paquete);
@@ -52,7 +52,7 @@ public class PaqueteServiceImpl extends CRUDImpl<Paquete, Integer> implements IP
 
     @Override
     public void eliminarPaquete(Integer idPaquete) throws Exception {
-        Paquete paquete =  repo.findById(idPaquete).orElseThrow(() -> new ModelNotFoundException("ID NOT FOUND: " + idPaquete));
+        Paquete paquete =  repo.findById(idPaquete).orElseThrow(() -> new EntityNotFoundException("ID no encontrado: " + idPaquete));
         Integer idViaje = paquete.getViaje().getIdViaje();
         repo.deleteById(idPaquete);
         viajeService.actualizarCostosViaje(idViaje);
@@ -69,8 +69,8 @@ public class PaqueteServiceImpl extends CRUDImpl<Paquete, Integer> implements IP
 
     @Override
     public Paquete confirmarPaquete(Integer idPaquete, Integer idViaje) {
-        Paquete paqueteEncontrado = repo.findById(idPaquete).orElseThrow(() -> new ModelNotFoundException("ID NOT FOUND: " + idPaquete));
-        Viaje viajeEncontrado = viajeRepo.findById(idViaje).orElseThrow(() -> new ModelNotFoundException("ID NOT FOUND: " + idViaje));
+        Paquete paqueteEncontrado = repo.findById(idPaquete).orElseThrow(() -> new EntityNotFoundException("ID no encontrado: " + idPaquete));
+        Viaje viajeEncontrado = viajeRepo.findById(idViaje).orElseThrow(() -> new EntityNotFoundException("ID no encontrado: " + idViaje));
 
         paqueteEncontrado.setEstado(true);
         paqueteEncontrado.setViaje(viajeEncontrado);
@@ -84,8 +84,8 @@ public class PaqueteServiceImpl extends CRUDImpl<Paquete, Integer> implements IP
 
     @Override
     public Paquete desconfirmarPaquete(Integer idPaquete, Integer idViaje) {
-        Paquete paqueteEncontrado = repo.findById(idPaquete).orElseThrow(() -> new ModelNotFoundException("ID NOT FOUND: " + idPaquete));
-        Viaje viajeEncontrado = viajeRepo.findById(idViaje).orElseThrow(() -> new ModelNotFoundException("ID NOT FOUND: " + idViaje));
+        Paquete paqueteEncontrado = repo.findById(idPaquete).orElseThrow(() -> new EntityNotFoundException("ID no encontrado: " + idPaquete));
+        Viaje viajeEncontrado = viajeRepo.findById(idViaje).orElseThrow(() -> new EntityNotFoundException("ID no encontrado: " + idViaje));
 
         paqueteEncontrado.setEstado(false);
 

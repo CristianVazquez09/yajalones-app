@@ -1,6 +1,5 @@
 package com.wolfpack.service.impl;
 
-import com.wolfpack.exception.ModelNotFoundException;
 import com.wolfpack.model.Pasajero;
 import com.wolfpack.model.Viaje;
 import com.wolfpack.model.enums.TipoPago;
@@ -11,6 +10,7 @@ import com.wolfpack.repo.IViajeRepo;
 import com.wolfpack.service.IPasajeroService;
 import com.wolfpack.service.IViajeService;
 import com.wolfpack.util.GeneradorFolio;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -29,10 +29,6 @@ public class PasajeroServiceImpl extends CRUDImpl<Pasajero, Integer> implements 
 
     @Override
     public Pasajero guardarPasajero(Pasajero pasajero) throws Exception {
-        /*Viaje viaje = viajeService.buscarPorId(pasajero.getViaje().getIdViaje());
-        if (viaje == null) {
-            throw new IllegalArgumentException("El viaje no puede ser nulo");
-        }*/
 
         // 2) Calculo el importe según tipo de pasajero y tipo de pago
         double importe = calcularImportePorPago(
@@ -56,7 +52,7 @@ public class PasajeroServiceImpl extends CRUDImpl<Pasajero, Integer> implements 
 
     @Override
     public Pasajero actualizarPasajero(Integer id, Pasajero pasajero) throws Exception {
-        Pasajero pasajeroEncontrado = repo.findById(id).orElseThrow(() -> new ModelNotFoundException("ID NOT FOUND: " + id));
+        Pasajero pasajeroEncontrado = repo.findById(id).orElseThrow(() -> new EntityNotFoundException("ID no encontrado: " + id));
 
 
         double importe = calcularImportePorPago(
@@ -76,7 +72,7 @@ public class PasajeroServiceImpl extends CRUDImpl<Pasajero, Integer> implements 
 
     @Override
     public void eliminarPasajero(Integer idPasajero) throws Exception {
-        Pasajero pasajero =  repo.findById(idPasajero).orElseThrow(() -> new ModelNotFoundException("ID NOT FOUND: " + idPasajero));
+        Pasajero pasajero =  repo.findById(idPasajero).orElseThrow(() -> new EntityNotFoundException("ID no encontrado: " + idPasajero));
         Integer idViaje = pasajero.getViaje().getIdViaje();
         repo.deleteById(idPasajero);
         viajeService.actualizarCostosViaje(idViaje);

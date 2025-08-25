@@ -22,8 +22,10 @@ spring:
     clean-disabled: true
   profiles:
     default: dev
+  mvc:
+    problemdetails:
+      enabled: true
 server:
   port: 8081
-
 jwt:
   secret: ${SECRET_KEY}

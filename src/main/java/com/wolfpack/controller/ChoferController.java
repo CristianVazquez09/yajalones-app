@@ -5,7 +5,6 @@ import com.wolfpack.model.Chofer;
 import com.wolfpack.service.IChoferService;
 import com.wolfpack.util.OnCreate;
 import com.wolfpack.util.OnUpdate;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.ResponseEntity;
@@ -57,6 +56,12 @@ public class ChoferController {
         Chofer obj = service.actualizar(id, convertToEntity(dto));
 
         return ResponseEntity.ok(convertToDto(obj));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> eliminar(@PathVariable("id") Integer id) throws Exception{
+        service.eliminar(id);
+        return ResponseEntity.noContent().build();
     }
 
     private ChoferDTO convertToDto(Chofer obj){
