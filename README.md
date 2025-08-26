@@ -217,16 +217,17 @@ Este backend usa **JSON Web Tokens (JWT)** para autenticar y autorizar el acceso
 
 ### Paquetes
 
-| Método | Ruta                                        | Descripción                                      |
-| ------ | ------------------------------------------- | ------------------------------------------------ |
-| GET    | `/paquetes`                                 | Listar todos los paquetes                        |
-| GET    | `/paquetes/{id}`                            | Obtener un paquete por su ID                     |
-| POST   | `/paquetes`                                 | Crear un nuevo paquete (asociado a un viaje)     |
-| PUT    | `/paquetes/{id}`                            | Actualizar un paquete existente                  |
-| DELETE | `/paquetes/{id}`                            | Eliminar un paquete (por ID)                     |
-| POST   | `/paquetes/pendiente`                       | **Crear paquete pendiente** (sin viaje asignado) |
-| GET    | `/paquetes/pendientes`                      | **Listar paquetes pendientes**                   |
-| PUT    | `/paquetes/confirmar/{idPaquete}/{idViaje}` | **Confirmar** (asignar pendiente a un viaje)     |
+| Método | Ruta                                        | Descripción                                                |
+| ------ |---------------------------------------------|------------------------------------------------------------|
+| GET    | `/paquetes`                                 | Listar todos los paquetes                                  |
+| GET    | `/paquetes/{id}`                            | Obtener un paquete por su ID                               |
+| POST   | `/paquetes`                                 | Crear un nuevo paquete (asociado a un viaje)               |
+| PUT    | `/paquetes/{id}`                            | Actualizar un paquete existente                            |
+| DELETE | `/paquetes/{id}`                            | Eliminar un paquete (por ID)                               |
+| POST   | `/paquetes/pendiente`                       | **Crear paquete pendiente** (sin viaje asignado)           |
+| GET    | `/paquetes/pendientes`                      | **Listar paquetes pendientes**                             |
+| PUT    | `/paquetes/confirmar/{idPaquete}/{idViaje}` | **Confirmar** (confirma el paquete al viaje asignado)      |
+| PUT    | `/paquetes/baja/{idPaquete}/{idViaje}`      | **Dar de Baja** (da de baja al paquete del viaje asignado) |
 
 **Crear Paquete** (`POST /paquetes`)
 
@@ -253,6 +254,8 @@ Este backend usa **JSON Web Tokens (JWT)** para autenticar y autorizar el acceso
 ```
 
 **Confirmar Paquete Pendiente** (`PUT /paquetes/confirmar/{idPaquete}/{idViaje}`)
+
+**Dar de baja Paquete Pendiente** (`PUT /paquetes/baja/{idPaquete}/{idViaje}`)
 > Solo se envían los id del paquete y del viaje por confirmar 
 
 **Listar Paquetes Pendientes** (`GET /paquetes/pendientes`) – ejemplo
@@ -334,7 +337,7 @@ Este backend usa **JSON Web Tokens (JWT)** para autenticar y autorizar el acceso
 
 Solo se permiten estas rutas (insensible a mayúsculas/minúsculas):
 
-* **Tuxtla Gutierrez** ↔ **Yajalon**
+* **Tuxtla** ↔ **Yajalon**
 
 **Obtener Viaje** (`GET /viajes/{idViaje}`)
 
@@ -359,6 +362,40 @@ Solo se permiten estas rutas (insensible a mayúsculas/minúsculas):
 ```
 
 > La respuesta incluye los totales calculados en servidor.
+
+### Cálculo de totales por ruta y tipo de pago
+
+Los **totales del viaje** se calculan automáticamente en el servidor según **la dirección de la ruta** y **el tipo de pago** de cada pasajero, además del estado de cobro de los paquetes.
+
+#### 1) Asignación de importes por **pasajeros**
+- **Ruta Tuxtla → Yajalón**
+   - `PAGADO` ➜ **totalPagadoTuxtla**
+   - `DESTINO` ➜ **totalPagadoYajalon**
+   - `SCLC` ➜ **totalPagadoSclc**
+- **Ruta Yajalón → Tuxtla**
+   - `PAGADO` ➜ **totalPagadoYajalon**
+   - `DESTINO` ➜ **totalPagadoTuxtla**
+   - `SCLC` ➜ **totalPagadoSclc**
+
+Además:
+- **totalPasajeros** = suma de todos los importes de pasajeros (independiente de dónde se sumen por tipo de pago).
+
+#### 2) Asignación de importes por **paquetes**
+- **totalPaqueteria** = suma de `importe` de **todos** los paquetes.
+- **totalPorCobrar** = suma de `importe` de los paquetes con `porCobrar = true`.
+- Los paquetes con `porCobrar = false` se consideran **cobrados** y participan en el cálculo del **totalViaje**.
+- Semántica de `estado`:
+   - `estado = false` ➜ **pendiente** (sin viaje asignado).
+   - `estado = true`  ➜ **confirmado** (ya no pendiente; asignado a un viaje).
+
+#### 3) Cálculo de **totalViaje**
+> **totalViaje** = (suma de **paquetes cobrados** `porCobrar = false`)
+> + (suma de **pasajeros** con `PAGADO` **en el origen** de la ruta) − **comision**
+
+> Nota: las bolsas por destino (`DESTINO`) y `SCLC` se contabilizan en sus totales correspondientes, pero **no** se suman para `totalViaje` hasta que efectivamente estén cobrados, de acuerdo con la regla anterior.
+
+---
+
 
 ## Enumeraciones
 

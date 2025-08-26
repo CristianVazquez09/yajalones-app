@@ -27,7 +27,7 @@ public class Chofer {
     @Column(nullable = false)
     private boolean activo;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_unidad")
     private Unidad unidad;
 }

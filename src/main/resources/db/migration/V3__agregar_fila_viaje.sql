@@ -1,0 +1,2 @@
+ALTER TABLE viaje
+ADD COLUMN total_pagado_TUXTLA DECIMAL(6,2) NOT NULL default 0;

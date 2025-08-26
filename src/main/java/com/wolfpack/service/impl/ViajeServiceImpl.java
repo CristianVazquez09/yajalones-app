@@ -13,8 +13,10 @@ import org.springframework.stereotype.Service;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 
 @Service
@@ -29,76 +31,24 @@ public class ViajeServiceImpl extends CRUDImpl<Viaje, Integer> implements IViaje
         return repo;
     }
 
+    /// CORREGIR --------------------------------------------------------------------------------------
     @Override
     public Viaje guardarViaje(Viaje viaje) {
-
         viaje.setComision(COMISION);
-        double totalPasajeros = viaje.getTotalPasajeros();
-
-        double totalPaquetes = viaje.getTotalPaqueteria();
-
-        double ingresoTotal = (totalPasajeros + totalPaquetes) - COMISION;
-
-        if(totalPasajeros == 0 && totalPaquetes == 0){
-            ingresoTotal = 0;
-        }
-
-
-
-        viaje.setTotalViaje(ingresoTotal);
 
         return repo.save(viaje);
     }
 
     @Override
     public void agregarPasajero(Pasajero pasajero) {
-
-        Viaje viaje = repo.getReferenceById(pasajero.getViaje().getIdViaje());
-
-
-        List<Pasajero> pasajeros= viaje.getPasajeros();
-        if(viaje.getPasajeros() == null){
-            pasajeros = new ArrayList<>();
-        }
-
-
-        pasajeros.add(pasajero);
-
-        double totalPasajeros = sumarImportes(pasajeros);
-        double totalPagoSCLC = sumarPorTipoPago(pasajeros, TipoPago.SCLC);
-        double totalPagoYajalon = sumarPorTipoPago(pasajeros, TipoPago.DESTINO);
-
-        viaje.setTotalPasajeros(totalPasajeros);
-        viaje.setTotalPagadoSclc(totalPagoSCLC);
-        viaje.setTotalPagadoYajalon(totalPagoYajalon);
-        viaje.setPasajeros(pasajeros);
-
-
-
-        guardarViaje(viaje);
-
+        Integer idViaje = pasajero.getViaje().getIdViaje();
+        actualizarCostosViaje(idViaje);
     }
 
     @Override
     public void agregarPaquetes(Paquete paquete) {
-        Viaje viaje = repo.getReferenceById(paquete.getViaje().getIdViaje());
-
-
-        List<Paquete> paquetes= viaje.getPaquetes();
-        if(viaje.getPaquetes() == null){
-            paquetes = new ArrayList<>();
-        }
-
-        paquetes.add(paquete);
-
-        double totalPaquetes = sumarImportes(paquetes);
-        double totalPorCobrar = sumarPaquetesPorCobrar(paquetes);
-
-        viaje.setTotalPaqueteria(totalPaquetes);
-        viaje.setTotalPorCobrar(totalPorCobrar);
-        viaje.setPaquetes(paquetes);
-
-        guardarViaje(viaje);
+        Integer idViaje = paquete.getViaje().getIdViaje();
+        actualizarCostosViaje(idViaje);
     }
 
     @Override
@@ -106,29 +56,62 @@ public class ViajeServiceImpl extends CRUDImpl<Viaje, Integer> implements IViaje
         Viaje v = repo.findById(idViaje)
                 .orElseThrow(() -> new EntityNotFoundException("Viaje no encontrado: " + idViaje));
 
+        String origen = norm(v.getOrigen());
+        String destino = norm(v.getDestino());
+
+        double ingresoTotal = 0;
         // Null-safety
         List<Pasajero> pasajeros = Optional.ofNullable(v.getPasajeros())
                 .orElseGet(List::of);
         List<Paquete>  paquetes   = Optional.ofNullable(v.getPaquetes())
                 .orElseGet(List::of);
 
-        double totalPasajeros   = sumarImportes(pasajeros);
-        double totalPaquetes    = sumarImportes(paquetes);
-        double totalPagoSCLC    = sumarPorTipoPago(pasajeros, TipoPago.SCLC);
-        double totalPagoYajalon = sumarPorTipoPago(pasajeros, TipoPago.DESTINO);
+        double totalPasajeros = sumarImportes(pasajeros);
+        double totalPagoSCLC = sumarPorTipoPago(pasajeros, TipoPago.SCLC);
+        double totalPagadoTuxtla = 0;
+        double totalPagoYajalon = 0;
+
+
+        switch (origen + "->" + destino) {
+            case "TUXTLA->YAJALON" -> {
+                totalPagoYajalon = sumarPorTipoPago(pasajeros, TipoPago.DESTINO);
+                totalPagadoTuxtla = sumarPorTipoPago(pasajeros, TipoPago.PAGADO);
+                ingresoTotal = totalPasajeros - (totalPagoYajalon + totalPagoSCLC);
+
+            }
+            case "YAJALON->TUXTLA" -> {
+                totalPagoYajalon = sumarPorTipoPago(pasajeros, TipoPago.PAGADO);
+                totalPagadoTuxtla = sumarPorTipoPago(pasajeros, TipoPago.DESTINO);
+                ingresoTotal = totalPasajeros - (totalPagadoTuxtla + totalPagoSCLC);
+            }
+
+        }
+
         double totalPorCobrar   = sumarPaquetesPorCobrar(paquetes);
+        double totalPaquetes    = sumarImportes(paquetes);
+        double totalPaqueteria = totalPaquetes - totalPorCobrar;
+        ingresoTotal = (ingresoTotal + totalPaqueteria) - COMISION;
 
+        v.setTotalViaje(ingresoTotal);
         v.setTotalPasajeros(totalPasajeros);
-        v.setTotalPagadoSclc(totalPagoSCLC);
-        v.setTotalPagadoYajalon(totalPagoYajalon);
-        v.setTotalPaqueteria(totalPaquetes);
         v.setTotalPorCobrar(totalPorCobrar);
-        v.setComision(COMISION);
-        v.setTotalViaje(totalPasajeros + totalPaquetes);
+        v.setTotalPaqueteria(totalPaquetes);
+        v.setTotalPagadoSclc(totalPagoSCLC);
+        v.setTotalPagadoTuxtla(totalPagadoTuxtla);
+        v.setTotalPagadoYajalon(totalPagoYajalon);
 
-        guardarViaje(v);
+        repo.save(v);
     }
 
+    @Override
+    public void darBajaPaquete(Paquete paquete, Integer idViaje) {
+        Viaje viaje = repo.findById(idViaje).orElseThrow(() -> new EntityNotFoundException("Viaje no encontrado: " + idViaje));
+        List<Paquete> lista = paquete.getViaje().getPaquetes();
+        lista.remove(paquete);
+        repo.save(viaje);
+        actualizarCostosViaje(idViaje);
+
+    }
 
 
     private <T> double sumarImportes(List<T> items){
@@ -159,6 +142,13 @@ public class ViajeServiceImpl extends CRUDImpl<Viaje, Integer> implements IViaje
                 .filter(Paquete::isPorCobrar)
                 .mapToDouble(Paquete::getImporte)
                 .sum();
+    }
+
+    private static String norm(String s) {
+        return Normalizer.normalize(s, Normalizer.Form.NFD)
+                .replaceAll("\\p{M}", "") // quita acentos
+                .trim()
+                .toUpperCase(Locale.ROOT);
     }
 
 

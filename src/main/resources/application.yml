@@ -5,7 +5,7 @@ spring:
     database: postgresql
     show-sql: false
     hibernate:
-      ddl-auto: validate
+      ddl-auto: none
     database-platform: org.hibernate.dialect.PostgreSQLDialect
   datasource:
     url: ${DATABASE_URL}
@@ -22,8 +22,10 @@ spring:
     clean-disabled: true
   profiles:
     default: dev
+  mvc:
+    problemdetails:
+      enabled: true
 server:
   port: 8081
-
 jwt:
   secret: ${SECRET_KEY}
