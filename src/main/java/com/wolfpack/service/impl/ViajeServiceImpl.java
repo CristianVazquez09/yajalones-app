@@ -4,6 +4,7 @@ import com.wolfpack.model.Paquete;
 import com.wolfpack.model.Pasajero;
 import com.wolfpack.model.Viaje;
 import com.wolfpack.model.enums.TipoPago;
+import com.wolfpack.repo.IPaqueteRepo;
 import com.wolfpack.repo.IViajeRepo;
 import com.wolfpack.repo.IGenericRepo;
 import com.wolfpack.service.IViajeService;
@@ -24,6 +25,7 @@ import java.util.Optional;
 public class ViajeServiceImpl extends CRUDImpl<Viaje, Integer> implements IViajeService {
     
     private final IViajeRepo repo;
+    private final IPaqueteRepo paqueteRepo;
 
     private final double COMISION = 340;
     @Override
@@ -106,8 +108,9 @@ public class ViajeServiceImpl extends CRUDImpl<Viaje, Integer> implements IViaje
     @Override
     public void darBajaPaquete(Paquete paquete, Integer idViaje) {
         Viaje viaje = repo.findById(idViaje).orElseThrow(() -> new EntityNotFoundException("Viaje no encontrado: " + idViaje));
-        List<Paquete> lista = paquete.getViaje().getPaquetes();
-        lista.remove(paquete);
+
+        paquete.setViaje(null);
+        paqueteRepo.save(paquete);
         repo.save(viaje);
         actualizarCostosViaje(idViaje);
 
