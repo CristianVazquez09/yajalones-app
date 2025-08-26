@@ -187,7 +187,9 @@ Este backend usa **JSON Web Tokens (JWT)** para autenticar y autorizar el acceso
   "apellido": "Pérez",
   "telefono": "1234567890",
   "activo": true,
-  "unidad": { "idUnidad": 1 }
+  "unidad": {
+      "idUnidad": 1
+   }
 }
 ```
 
