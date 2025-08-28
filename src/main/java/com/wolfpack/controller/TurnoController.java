@@ -59,6 +59,12 @@ public class TurnoController {
         return ResponseEntity.ok(convertToDto(obj));
     }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> eliminar(@PathVariable("id") Integer id) throws Exception{
+        service.eliminar(id);
+        return ResponseEntity.noContent().build();
+    }
+
     private TurnoDTO convertToDto(Turno obj){
         return modelMapper.map(obj, TurnoDTO.class);
     }

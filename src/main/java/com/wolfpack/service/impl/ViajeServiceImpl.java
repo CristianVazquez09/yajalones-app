@@ -27,16 +27,15 @@ public class ViajeServiceImpl extends CRUDImpl<Viaje, Integer> implements IViaje
     private final IViajeRepo repo;
     private final IPaqueteRepo paqueteRepo;
 
-    private final double COMISION = 340;
+    private final double COMISION = 0.10;
     @Override
     protected IGenericRepo<Viaje, Integer> getRepo() {
         return repo;
     }
 
-    /// CORREGIR --------------------------------------------------------------------------------------
     @Override
     public Viaje guardarViaje(Viaje viaje) {
-        viaje.setComision(COMISION);
+        viaje.setComision(0.0);
 
         return repo.save(viaje);
     }
@@ -61,40 +60,48 @@ public class ViajeServiceImpl extends CRUDImpl<Viaje, Integer> implements IViaje
         String origen = norm(v.getOrigen());
         String destino = norm(v.getDestino());
 
-        double ingresoTotal = 0;
         // Null-safety
-        List<Pasajero> pasajeros = Optional.ofNullable(v.getPasajeros())
-                .orElseGet(List::of);
-        List<Paquete>  paquetes   = Optional.ofNullable(v.getPaquetes())
-                .orElseGet(List::of);
+        List<Pasajero> pasajeros = Optional.ofNullable(v.getPasajeros()).orElseGet(List::of);
+        List<Paquete> paquetes = Optional.ofNullable(v.getPaquetes()).orElseGet(List::of);
 
+        // Totales base
         double totalPasajeros = sumarImportes(pasajeros);
         double totalPagoSCLC = sumarPorTipoPago(pasajeros, TipoPago.SCLC);
         double totalPagadoTuxtla = 0;
         double totalPagoYajalon = 0;
 
+        double ingresoPasajerosNeto = 0;
 
         switch (origen + "->" + destino) {
             case "TUXTLA->YAJALON" -> {
                 totalPagoYajalon = sumarPorTipoPago(pasajeros, TipoPago.DESTINO);
                 totalPagadoTuxtla = sumarPorTipoPago(pasajeros, TipoPago.PAGADO);
-                ingresoTotal = totalPasajeros - (totalPagoYajalon + totalPagoSCLC);
-
+                ingresoPasajerosNeto = totalPasajeros - (totalPagoYajalon + totalPagoSCLC);
             }
             case "YAJALON->TUXTLA" -> {
                 totalPagoYajalon = sumarPorTipoPago(pasajeros, TipoPago.PAGADO);
                 totalPagadoTuxtla = sumarPorTipoPago(pasajeros, TipoPago.DESTINO);
-                ingresoTotal = totalPasajeros - (totalPagadoTuxtla + totalPagoSCLC);
+                ingresoPasajerosNeto = totalPasajeros - (totalPagadoTuxtla + totalPagoSCLC);
             }
-
         }
 
-        double totalPorCobrar   = sumarPaquetesPorCobrar(paquetes);
-        double totalPaquetes    = sumarImportes(paquetes);
-        double totalPaqueteria = totalPaquetes - totalPorCobrar;
-        ingresoTotal = (ingresoTotal + totalPaqueteria) - COMISION;
+        // Paquetería: solo lo efectivamente cobrado (no "por cobrar")
+        double totalPorCobrar = sumarPaquetesPorCobrar(paquetes);
+        double totalPaquetes = sumarImportes(paquetes);
+        double totalPaqueteriaCobrada = totalPaquetes - totalPorCobrar;
 
-        v.setTotalViaje(ingresoTotal);
+        // Ingreso bruto del viaje (base para comisión): pasajeros neto + paquetería cobrada
+        double ingresoBruto = ingresoPasajerosNeto + totalPaqueteriaCobrada;
+
+        // Comisión = % del total del viaje (ingreso bruto)
+        double comision = roundMoney(ingresoBruto * COMISION);
+
+        // Ingreso neto final del viaje
+        double ingresoNeto = roundMoney(ingresoBruto - comision);
+
+        // Persistimos métricas
+        v.setTotalViaje(ingresoNeto);
+        v.setComision(comision);
         v.setTotalPasajeros(totalPasajeros);
         v.setTotalPorCobrar(totalPorCobrar);
         v.setTotalPaqueteria(totalPaquetes);
@@ -152,6 +159,10 @@ public class ViajeServiceImpl extends CRUDImpl<Viaje, Integer> implements IViaje
                 .replaceAll("\\p{M}", "") // quita acentos
                 .trim()
                 .toUpperCase(Locale.ROOT);
+    }
+
+    private static double roundMoney(double value) {
+        return Math.round(value * 100.0) / 100.0;
     }
 
 

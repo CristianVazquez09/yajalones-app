@@ -59,6 +59,12 @@ public class UnidadController {
         return ResponseEntity.ok(convertToDto(obj));
     }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> eliminar(@PathVariable("id") Integer id) throws Exception{
+        service.eliminar(id);
+        return ResponseEntity.noContent().build();
+    }
+
     private UnidadDTO convertToDto(Unidad obj){
         return modelMapper.map(obj, UnidadDTO.class);
     }
