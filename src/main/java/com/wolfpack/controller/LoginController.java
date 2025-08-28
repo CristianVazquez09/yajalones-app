@@ -23,7 +23,7 @@ public class LoginController {
     private final JwtTokenUtil jwtTokenUtil;
     private final JwtUserDetailsService userDetailsService;
 
-    @PostMapping("/inicioSesion")
+    @PostMapping("/inicio-sesion")
     public ResponseEntity<JwtResponse> login(@RequestBody JwtRequest req) throws Exception{
         authenticate(req.getNombreUsuario(), req.getPassword());
 
