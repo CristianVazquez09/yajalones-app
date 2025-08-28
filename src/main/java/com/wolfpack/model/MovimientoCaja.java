@@ -1,5 +1,6 @@
 package com.wolfpack.model;
 
+import com.wolfpack.model.audit.Auditable;
 import com.wolfpack.model.enums.CategoriaMovimiento;
 import com.wolfpack.model.enums.Terminal;
 import com.wolfpack.model.enums.TipoMovimiento;
@@ -17,7 +18,7 @@ import java.time.LocalDateTime;
                 @Index(name = "idx_mc_terminal_fecha", columnList = "terminal, creado_en"),
                 @Index(name = "idx_mc_tipo_terminal", columnList = "tipo, terminal")
         })
-public class MovimientoCaja {
+public class MovimientoCaja extends Auditable {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idMovimiento;

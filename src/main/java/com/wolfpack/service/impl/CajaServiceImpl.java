@@ -58,47 +58,53 @@ public class CajaServiceImpl implements ICajaService {
 
     @Transactional
     @Override
-    public void cobrarPendiente(Long idMovimientoPendiente, Integer usuarioCobrador, String folioRecibo) {
-        MovimientoCaja pendiente = movRepo.findById(idMovimientoPendiente)
+    // Cobrar pendiente (solo recibo folio opcional)
+    public void cobrarPendiente(Long idMovimientoPendiente, String folioRecibo) {
+        var pend = movRepo.findById(idMovimientoPendiente)
                 .orElseThrow(() -> new EntityNotFoundException("Pendiente no encontrado: " + idMovimientoPendiente));
-        if (pendiente.getTipo() != TipoMovimiento.PENDIENTE || pendiente.isSaldado()) {
+        if (pend.getTipo() != TipoMovimiento.PENDIENTE || pend.isSaldado()) {
             throw new IllegalStateException("No es un pendiente activo");
         }
 
-        pendiente.setSaldado(true);
-        pendiente.setSaldadoEn(LocalDateTime.now());
-        movRepo.save(pendiente);
+        pend.setSaldado(true);
+        pend.setSaldadoEn(java.time.LocalDateTime.now());
+        movRepo.save(pend); // @LastModifiedBy se rellena aquí
 
-        MovimientoCaja cobro = MovimientoCaja.builder()
-                .terminal(pendiente.getTerminal())
+        var cobro = MovimientoCaja.builder()
+                .terminal(pend.getTerminal())
                 .tipo(TipoMovimiento.COBRO_PENDIENTE)
-                .categoria(pendiente.getCategoria())
-                .importe(pendiente.getImporte())
-                .idViaje(pendiente.getIdViaje())
-                .idReferencia(pendiente.getIdReferencia())
-                .idPendienteOrigen(pendiente.getIdMovimiento())
-                .creadoEn(LocalDateTime.now())
-                .descripcion("Cobro pendiente folio=" + (folioRecibo == null ? "" : folioRecibo) + " por usuario=" + usuarioCobrador)
+                .categoria(pend.getCategoria())
+                .importe(pend.getImporte())
+                .idViaje(pend.getIdViaje())
+                .idReferencia(pend.getIdReferencia())
+                .idPendienteOrigen(pend.getIdMovimiento())
+                .creadoEn(java.time.LocalDateTime.now())
                 .saldado(false)
+                .descripcion("Cobro pendiente")
                 .build();
-        movRepo.save(cobro);
+        movRepo.save(cobro); // @CreatedBy = usuario que cobró
     }
+
 
     @Transactional
     @Override
     public CorteCaja abrirCorteSiNoExiste(Terminal terminal, String turnoLabel) {
-        return corteRepo.findByTerminalAndEstado(terminal, EstadoCorte.ABIERTO)
+        CorteCaja corte = corteRepo.findByTerminalAndEstado(terminal, EstadoCorte.ABIERTO)
                 .orElseGet(() -> corteRepo.save(CorteCaja.builder()
                         .terminal(terminal)
                         .turnoLabel(turnoLabel)
-                        .apertura(LocalDateTime.now())
+                        .apertura(java.time.LocalDateTime.now())
                         .estado(EstadoCorte.ABIERTO)
-                        .ingresos(BigDecimal.ZERO)
-                        .pendientesCreados(BigDecimal.ZERO)
-                        .pendientesCobrados(BigDecimal.ZERO)
-                        .saldoInicialPend(BigDecimal.ZERO)
-                        .saldoFinalPend(BigDecimal.ZERO)
+                        .ingresos(java.math.BigDecimal.ZERO)
+                        .pendientesCreados(java.math.BigDecimal.ZERO)
+                        .pendientesCobrados(java.math.BigDecimal.ZERO)
+                        .saldoInicialPend(java.math.BigDecimal.ZERO)
+                        .saldoFinalPend(java.math.BigDecimal.ZERO)
                         .build()));
+
+        // @CreatedBy registra quién abrió. Si además quieres el campo explícito:
+        //corte.setAbiertoPor(corte.getCreatedBy());
+        return corteRepo.save(corte);
     }
 
     @Transactional
@@ -124,6 +130,7 @@ public class CajaServiceImpl implements ICajaService {
         abierto.setIngresos(ingresos);
         abierto.setPendientesCreados(pendCreados);
         abierto.setPendientesCobrados(pendCobrados);
+        //abierto.setCerradoPor(abierto.getLastModifiedBy()); // el que ejecuta cierre
         abierto.setSaldoFinalPend(saldoFinal);
 
         return corteRepo.save(abierto);

@@ -30,7 +30,7 @@ public class CajaController {
 
     @PostMapping("/cobrar/{idPendiente}")
     public ResponseEntity<Void> cobrar(@PathVariable Long idPendiente, @RequestBody CobroReq req) {
-        caja.cobrarPendiente(idPendiente, req.getUsuarioId(), req.getFolioRecibo());
+        caja.cobrarPendiente(idPendiente, req.getFolioRecibo());
         return ResponseEntity.ok().build();
     }
 

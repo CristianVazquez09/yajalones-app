@@ -12,7 +12,7 @@ import java.util.List;
 public interface ICajaService /*extends ICRUD<CorteCaja, Long>*/ {
     void registrarPorPasajero(Pasajero p);
     void registrarPorPaquete(Paquete q);
-    void cobrarPendiente(Long idMovimientoPendiente, Integer usuarioCobrador, String folioRecibo);
+    void cobrarPendiente(Long idMovimientoPendiente, String folioRecibo);
 
     CorteCaja abrirCorteSiNoExiste(Terminal terminal, String turnoLabel);
     CorteCaja cerrarCorte(Terminal terminal, String turnoLabel);

@@ -1,5 +1,6 @@
 package com.wolfpack.model;
 
+import com.wolfpack.model.audit.Auditable;
 import com.wolfpack.model.enums.EstadoCorte;
 import com.wolfpack.model.enums.Terminal;
 import jakarta.persistence.*;
@@ -14,7 +15,7 @@ import java.time.LocalDateTime;
 @Table(name = "corte_caja", uniqueConstraints = {
         @UniqueConstraint(name = "uq_corte_abierto", columnNames = {"terminal", "estado"})
 })
-public class CorteCaja {
+public class CorteCaja extends Auditable {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idCorte;
