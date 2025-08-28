@@ -253,7 +253,19 @@ curl -X POST localhost:8081/caja/cerrar/YAJALON -H "Authorization: Bearer <jwt>"
 
 **Crear Chofer**
 ```json
+<<<<<<< HEAD
 { "nombre": "Juan", "apellido": "Pérez", "telefono": "1234567890", "activo": true, "unidad": { "idUnidad": 1 } }
+=======
+{
+  "nombre": "Juan",
+  "apellido": "Pérez",
+  "telefono": "1234567890",
+  "activo": true,
+  "unidad": {
+      "idUnidad": 1
+   }
+}
+>>>>>>> 51564c71a9a96720bb87b26ad2e0de5858550b83
 ```
 
 ### Descuentos
