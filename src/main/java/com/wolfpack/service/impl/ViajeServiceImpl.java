@@ -7,6 +7,7 @@ import com.wolfpack.model.enums.TipoPago;
 import com.wolfpack.repo.IPaqueteRepo;
 import com.wolfpack.repo.IViajeRepo;
 import com.wolfpack.repo.IGenericRepo;
+import com.wolfpack.service.ICajaService;
 import com.wolfpack.service.IViajeService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +27,7 @@ public class ViajeServiceImpl extends CRUDImpl<Viaje, Integer> implements IViaje
     
     private final IViajeRepo repo;
     private final IPaqueteRepo paqueteRepo;
-
+    private final ICajaService cajaService; // <--- nuevo
     private final double COMISION = 0.10;
     @Override
     protected IGenericRepo<Viaje, Integer> getRepo() {
@@ -42,12 +43,14 @@ public class ViajeServiceImpl extends CRUDImpl<Viaje, Integer> implements IViaje
 
     @Override
     public void agregarPasajero(Pasajero pasajero) {
+        cajaService.registrarPorPasajero(pasajero);
         Integer idViaje = pasajero.getViaje().getIdViaje();
         actualizarCostosViaje(idViaje);
     }
 
     @Override
     public void agregarPaquetes(Paquete paquete) {
+        cajaService.registrarPorPaquete(paquete);
         Integer idViaje = paquete.getViaje().getIdViaje();
         actualizarCostosViaje(idViaje);
     }
