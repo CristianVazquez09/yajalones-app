@@ -50,7 +50,7 @@ public class WebSecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         // Ant-style patterns sin antMatcher
-                        .requestMatchers("/inicioSesion").permitAll()
+                        .requestMatchers("/inicio-sesion").permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

@@ -23,8 +23,6 @@ spring:
   mvc:
     problemdetails:
       enabled: true
-  profiles:
-    default: dev
 server:
   port: 8081
 jwt:

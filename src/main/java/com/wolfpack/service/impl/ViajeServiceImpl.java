@@ -95,9 +95,10 @@ public class ViajeServiceImpl extends CRUDImpl<Viaje, Integer> implements IViaje
 
         // Ingreso bruto del viaje (base para comisión): pasajeros neto + paquetería cobrada
         double ingresoBruto = ingresoPasajerosNeto + totalPaqueteriaCobrada;
+        double ingresoTotal = totalPasajeros + totalPaquetes;
 
         // Comisión = % del total del viaje (ingreso bruto)
-        double comision = roundMoney(ingresoBruto * COMISION);
+        double comision = roundMoney(ingresoTotal * COMISION);
 
         // Ingreso neto final del viaje
         double ingresoNeto = roundMoney(ingresoBruto - comision);
